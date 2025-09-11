@@ -13,9 +13,9 @@ const navItems = [
 export default function SiteHeader() {
   return (
     <header className="fixed top-0 inset-x-0 z-50 bg-transparent">
-      <div className="mx-auto w-full max-w-7xl px-6 py-4 flex items-center justify-between">
+      <div className="mx-auto w-full max-w-7xl px-6 py-6 flex items-center justify-between ">
         <Logo />
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden md:flex items-center gap-8 ">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
