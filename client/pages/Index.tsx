@@ -70,7 +70,7 @@ export default function Index() {
 
     </section>
 
-    <main className="py-16 px-4 sm:px-6 lg:px-8">
+    <main className="py-16 px-4 sm:px-6 lg:px-8 bg-[#4F6483]">
                 <div className="container mx-auto max-w-7xl">
                     <h2 className="text-4xl font-extrabold text-center text-gray-900 mb-12">How It Works</h2>
                     
