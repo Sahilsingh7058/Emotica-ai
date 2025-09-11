@@ -13,6 +13,8 @@ import Journal from "@/pages/Journal";
 import Community from "@/pages/Community";
 import Support from "@/pages/Support";
 import Profile from "@/pages/Profile";
+import Emotica from "./pages/Emotica";
+import SmallApps from "./pages/SmallApps";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +31,8 @@ const App = () => (
             <Route path="community" element={<Community />} />
             <Route path="support" element={<Support />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="emotica" element={<Emotica />} />
+            <Route path="smallapps" element={<SmallApps />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

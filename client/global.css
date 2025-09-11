@@ -107,3 +107,21 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* For WebKit browsers (Chrome, Safari) */
+::-webkit-scrollbar {
+  width: 0;
+  background: transparent; /* Optional: hide the track */
+}
+
+/* For Firefox */
+body {
+  scrollbar-width: none;
+}
+/* You can also use this for a specific element */
+/* .your-container { scrollbar-width: none; } */
+
+/* For Internet Explorer and Edge */
+body {
+  -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+}
