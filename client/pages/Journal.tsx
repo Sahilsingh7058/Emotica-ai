@@ -1,10 +1,9 @@
-
 import PagePlaceholder from "./PagePlaceholder";
 import React, { useState } from "react";
 
 export default function Journal() {
   const [entry, setEntry] = useState("");
-  const [entries, setEntries] = useState<string[]>([]);
+  const [entries, setEntries] = useState([]);
 
 
   const handleAddEntry = () => {
@@ -16,12 +15,12 @@ export default function Journal() {
 
 
   return (
-    <div className=" min-h-screen bg-gradient-to-tl from-blue-50  flex flex-col items-center py-12 px-4 pt-[100px] ">
+    <div className="min-h-screen bg-[#4F6483] flex flex-col items-center py-12 px-4 pt-[100px]">
       {/* Header */}
-      <h1 className="text-4xl md:text-5xl font-extrabold text-gray-700 mb-6 text-center text">
+      <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-6 text-center text">
         Your Daily Journal !!
       </h1>
-      <p className="text-lg text-gray-600 mb-10 text-center max-w-2xl">
+      <p className="text-lg text-gray-200 mb-10 text-center max-w-2xl">
         Write down your thoughts, feelings, and reflections. Journaling can help
         bring clarity and peace of mind.
       </p>
@@ -43,7 +42,7 @@ export default function Journal() {
       </div>
       <div className="w-full max-w-2xl space-y-6">
         {entries.length === 0 ? (
-          <p className="text-gray-500 text-center">
+          <p className="text-gray-400 text-center">
             No journal entries yet. Start writing your first one!
           </p>
         ) : (

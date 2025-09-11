@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 
+// This declaration is for TypeScript and will not cause an issue in a .jsx file,
+// but is good practice to include if you were using TypeScript.
 declare global {
   interface Window {
     webkitSpeechRecognition: any;
@@ -16,14 +18,16 @@ const EmoticaAI = () => {
   const [statusText, setStatusText] = useState("Click to start talking.");
   const [isRecording, setIsRecording] = useState(false);
   const chatAreaRef = useRef(null);
-  const recognitionRef = useRef(null); 
+  const recognitionRef = useRef(null);
   const voicesRef = useRef([]);
 
-  // Replace with your actual Gemini API key
-  const API_KEY = "AIzaSyA7370sbYTvrzpz_uHCO0HJ4nIsdW-E1Io"; 
+  // IMPORTANT: Replace this with your actual Gemini API key.
+  const API_KEY = "";
   const TEXT_API_URL =
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
   
+  // NOTE: This audio API URL is for a different model. The current code uses
+  // the browser's built-in Speech Synthesis API for audio output.
   const AUDIO_API_URL =
     `https://texttospeech.googleapis.com/v1beta1/text:synthesize?key=${API_KEY}`;
 
@@ -38,7 +42,7 @@ const EmoticaAI = () => {
   const requestMicrophonePermission = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach(track => track.stop()); 
+      stream.getTracks().forEach(track => track.stop());
       return true;
     } catch (error) {
       console.error("Microphone permission denied:", error);
@@ -99,7 +103,7 @@ const EmoticaAI = () => {
     newRecognition.lang = "en-US";
     newRecognition.interimResults = false;
     
-    recognitionRef.current = newRecognition; 
+    recognitionRef.current = newRecognition;
 
     newRecognition.onstart = () => {
       setIsRecording(true);
@@ -184,7 +188,7 @@ const EmoticaAI = () => {
       "Create a very short, simple, and calming guided breathing meditation script for a young person. Focus on a positive and relaxing tone. The script should be no more than three or four sentences long.";
     const script = await getTextFromLLM(meditationPrompt);
     addMessage(script, "assistant");
-    speakText(script); 
+    speakText(script);
     setStatusText("Click to start talking.");
   };
 
@@ -194,7 +198,7 @@ const EmoticaAI = () => {
       "Generate a short, creative writing or journaling prompt for a young person to help them express their feelings. Keep it open-ended and positive. For example, 'Write about a time you felt like a superhero.'";
     const creativeText = await getTextFromLLM(promptPrompt);
     addMessage(creativeText, "assistant");
-    speakText(creativeText); 
+    speakText(creativeText);
     setStatusText("Click to start talking.");
   };
 
@@ -228,9 +232,8 @@ const EmoticaAI = () => {
   };
 
   return (
-    <div className="bg-gradient-to-b from-background/20 to-background bg-gray-900 flex items-center justify-center min-h-screen p-4 bg-gray-100 relative  pt-[100px]">
-     
-      <div className=" max-w-lg w-full bg-white/85 backdrop-blur-lg rounded-3xl shadow-xl flex flex-col min-h-[80vh] overflow-hidden">
+    <div className="bg-[#4F6483] flex items-center justify-center min-h-screen p-4 pt-[100px]">
+      <div className="max-w-lg w-full bg-white/85 backdrop-blur-lg rounded-3xl shadow-xl flex flex-col min-h-[80vh] overflow-hidden">
         {/* Header */}
         <div className="header bg-gradient-to-r from-purple-600 to-purple-400 text-white text-center p-6 shadow-md">
           <h1 className="text-3xl font-bold">Emotica AI</h1>

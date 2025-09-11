@@ -1,4 +1,4 @@
-
+import React from "react";
 
 // Placeholder data for community posts
 const communityPosts = [
@@ -48,13 +48,13 @@ const communityPosts = [
 
 export default function Community(){
   return (
-    <div className="from-background/20 to-background bg-gradient-to-b bg-gray-400 min-h-screen  py-16 px-4 sm:px-6 lg:px-8 pt-[100px]">
+    <div className="bg-[#4F6483] min-h-screen py-16 px-4 sm:px-6 lg:px-8 pt-[100px]">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 drop-shadow-sm">
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-white drop-shadow-sm">
             Community Forum
           </h1>
-          <p className="mt-4 text-lg text-gray-600">
+          <p className="mt-4 text-lg text-gray-200">
             Share your thoughts and connect with others on a similar journey.
           </p>
         </div>

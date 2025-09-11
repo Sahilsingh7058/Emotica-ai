@@ -76,12 +76,12 @@ const smallApps = [
 // The SmallApps component with a grid layout
 export default function SmallApps (){
   return (
-    <div className=" from-background/20 to-background bg-gradient-to-b min-h-screen bg-gray-400 py-16 px-4 sm:px-6 lg:px-8 pt-[120px]">
-      <div className="max-w-7xl mx-auto text-center mb-12">
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-700 drop-shadow-sm">
+<div className="bg-[#4F6483] min-h-screen py-16 px-4 sm:px-6 lg:px-8 pt-[120px]">
+        <div className="max-w-7xl mx-auto text-center mb-12">
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-white drop-shadow-sm">
           Small Apps
         </h1>
-        <p className="mt-4 text-lg text-gray-600">
+        <p className="mt-4 text-lg text-white">
           Explore a collection of small tools designed to support your wellness journey.
         </p>
       </div>
