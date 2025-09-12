@@ -1,6 +1,6 @@
 import React from "react";
-import Logo2 from "./Logo2.png"; 
-import Name from "./name logo.png"; 
+import Logo2 from "./img/Logo2.png"; 
+import Name from "./img/name logo.png"; 
 
 export const Logo: React.FC<{ className?: string } & React.HTMLAttributes<HTMLDivElement>> = ({ className = "", ...props }) => {
   return (

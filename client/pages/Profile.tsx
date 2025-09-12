@@ -2,13 +2,17 @@ import React from 'react';
 
 // Placeholder data for the user profile
 const userProfile = {
-  name: "Sahil Singh",
+  name: localStorage.getItem("userFirstName") +" "+ localStorage.getItem("userLastName"),
   bio: "On a journey to prioritize mental and emotional wellness. Finding peace one day at a time.",
   joinedDate: "October 2024",
-  profilePictureUrl: "https://placehold.co/150x150/8a2be2/ffffff?text=SS" 
+  profilePictureUrl: `https://placehold.co/150x150/8a2be2/ffffff?text=${localStorage.getItem("userFirstName")?.charAt(0) || 'U'}${localStorage.getItem("userLastName")?.charAt(0) || 'N'}`,
 };
 
 export default function Profile() {
+  const FirstName = localStorage.getItem("userFirstName");
+  const LastName = localStorage.getItem("userLastName");
+  const Email = localStorage.getItem("userEmail");
+
   return (
     <div className="bg-[#4F6483] min-h-screen py-16 px-4 sm:px-6 lg:px-8 pt-[100px]">
       <div className="max-w-4xl mx-auto">
@@ -43,7 +47,7 @@ export default function Profile() {
             </div>
             <div className="flex justify-between items-center pb-2 border-b border-gray-200">
               <span className="text-gray-700">Email</span>
-              <span className="text-gray-500">sahil.singh@example.com</span>
+              <span className="text-gray-500">{Email}</span>
             </div>
             <div className="flex justify-between items-center pb-2 border-b border-gray-200">
               <span className="text-gray-700">Password</span>

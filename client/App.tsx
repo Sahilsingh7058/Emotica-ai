@@ -13,7 +13,7 @@ import Journal from "@/pages/Journal";
 import Community from "@/pages/Community";
 import Support from "@/pages/Support";
 import Profile from "@/pages/Profile";
-import Emotica from "./pages/Emotica";
+import Emotica from "./components/Emotica";
 import SmallApps from "./pages/SmallApps";
 
 const queryClient = new QueryClient();
