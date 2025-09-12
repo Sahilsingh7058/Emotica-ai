@@ -25,7 +25,7 @@ export default function Journal() {
       </p>
 
 
-      <div className="w-full max-w-2xl bg-white shadow-xl rounded-2xl p-6 mb-8">
+      <div className="w-full max-w-2xl bg-gray-200 shadow-xl rounded-2xl p-6 mb-8">
         <textarea
           value={entry}
           onChange={(e) => setEntry(e.target.value)}
