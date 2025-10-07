@@ -7,13 +7,13 @@ const smallApps = [
     title: "Breathing App",
     description: "A simple guide for mindful breathing exercises to help you relax and de-stress.",
     icon: "🌬️",
-    path: "/breathing"
+    path: "/Small Apps/breathing"
   },
   {
     title: "Journal App",
     description: "Write down your thoughts and feelings in a private, digital journal.",
     icon: "✍️",
-    path: "/journal"
+    path: "/Small Apps/journal"
   },
   {
     title: "Mood Tracker",
@@ -34,37 +34,37 @@ const smallApps = [
     title: "Sleep Stories",
     description: "Listen to calming bedtime stories and soundscapes to improve sleep quality.",
     icon: "🌙",
-    path: "/sleep-stories"
+    path: "/Small Apps/sleep-stories"
   },
   {
     title: "Focus Booster",
     description: "Use the Pomodoro technique with soothing background sounds to stay productive.",
     icon: "⏳",
-    path: "/focus"
+    path: "/Small Apps/focus"
   },
   {
     title: "Energy Check",
     description: "Log your energy levels and get tips on when to rest or recharge.",
     icon: "⚡",
-    path: "/energy"
+    path: "/Small Apps/energy"
   },
   {
     title: "Stress Relief Sounds",
     description: "Play relaxing ambient sounds like rain, waves, or forest to ease stress.",
     icon: "🎶",
-    path: "/sounds"
+    path: "/Small Apps/sounds"
   },
   {
     title: "Habit Builder",
     description: "Build healthy habits with streaks, reminders, and motivational nudges.",
     icon: "📅",
-    path: "/habits"
+    path: "/Small Apps/habits"
   },
   {
     title: "Kindness Journal",
     description: "Record kind actions you’ve done or received to nurture compassion.",
     icon: "🤝",
-    path: "/kindness"
+    path: "/Small Apps/kindness"
   },
   {
     title: "Positive Affirmations",

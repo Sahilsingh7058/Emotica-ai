@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import RootLayout from "@/components/layout/RootLayout";
 import Journal from "@/pages/Journal";
+import Breathing from "@/pages/Small Apps/Breathing";
 import Community from "@/pages/Community";
 import Support from "@/pages/Support";
 import Profile from "@/pages/Profile";
@@ -26,6 +27,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route element={<RootLayout />}>
+          
             <Route index element={<Index />} />
             <Route path="journal" element={<Journal />} />
             <Route path="community" element={<Community />} />
@@ -33,6 +35,8 @@ const App = () => (
             <Route path="profile" element={<Profile />} />
             <Route path="emotica" element={<Emotica />} />
             <Route path="smallapps" element={<SmallApps />} />
+
+            <Route path="/Small Apps/Breathing" element={<Breathing />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
