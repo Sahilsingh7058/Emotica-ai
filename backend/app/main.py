@@ -3,14 +3,13 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorClient
 from fastapi.middleware.cors import CORSMiddleware
-from ..database.connection import users_collection # import your collection
+from ..database.connection import users_collection
+from ..routes import assessmentRoutes
 
-# You'll need to configure CORS for your Next.js app to be able to make requests
 app = FastAPI()
 
-origins = [
-    "http://localhost:3000",  # Your Next.js dev server
-]
+# ✅ THE FIX: Use a wildcard to allow all local origins for development
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,6 +19,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(
+    assessmentRoutes.router,
+    prefix="/api/assessment",
+    tags=["Assessment"],
+)
+
+# --- Your existing user routes remain unchanged ---
 class User(BaseModel):
     name: str
     email: str
@@ -27,6 +33,8 @@ class User(BaseModel):
 @app.get("/api/users")
 async def get_users():
     users = await users_collection.find().to_list(100)
+    for user in users:
+        user["_id"] = str(user["_id"])
     return users
 
 @app.post("/api/users")
