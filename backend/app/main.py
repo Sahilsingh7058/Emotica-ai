@@ -3,8 +3,8 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorClient
 from fastapi.middleware.cors import CORSMiddleware
-from ..database.connection import users_collection
-from ..routes import assessmentRoutes
+# from ..database.connection import users_collection
+from routes import assessmentRoutes
 
 app = FastAPI()
 

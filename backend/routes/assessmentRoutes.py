@@ -3,7 +3,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import List
-from ..app.assessmentData import questions
+from app.assessmentData import questions
 
 router = APIRouter()  # ✅ THIS LINE WAS MISSING
 
