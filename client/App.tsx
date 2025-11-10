@@ -16,6 +16,7 @@ import Support from "@/pages/Support";
 import Profile from "@/pages/Profile";
 import Emotica from "./components/Emotica";
 import SmallApps from "./pages/SmallApps";
+import Meditation from "./pages/Small Apps/Meditation";
 
 const queryClient = new QueryClient();
 
@@ -36,7 +37,9 @@ const App = () => (
             <Route path="emotica" element={<Emotica />} />
             <Route path="smallapps" element={<SmallApps />} />
 
+            <Route path="/Small Apps/Journal" element={<Journal />} />
             <Route path="/Small Apps/Breathing" element={<Breathing />} />
+            <Route path="/Small Apps/Meditation" element={<Meditation />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

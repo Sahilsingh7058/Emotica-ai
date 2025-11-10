@@ -28,7 +28,8 @@ const smallApps = [
   {
     title: "Meditation Timer",
     description: "A clean and simple timer for your daily meditation practice.",
-    icon: "🧘"
+    icon: "🧘",
+    path: "/Small Apps/Meditation"
   },
   {
     title: "Sleep Stories",
