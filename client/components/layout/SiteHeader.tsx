@@ -8,7 +8,7 @@ const navItems = [
   { to: "/", label: "Home" },
   { to: "/journal", label: "Journal" },
   { to: "/community", label: "Community" },
-  { to: "/smallapps", label: "Small Apps" },
+  { to: "/smallapps", label: "The Wellness Hub" },
   { to: "/support", label: "Support" },
   { to: "/profile", label: "Profile" },
 ];

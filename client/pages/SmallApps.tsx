@@ -15,16 +15,7 @@ const smallApps = [
     icon: "✍️",
     path: "/Small Apps/journal"
   },
-  {
-    title: "Mood Tracker",
-    description: "Track your daily mood and understand your emotional patterns over time.",
-    icon: "😊"
-  },
-  {
-    title: "Gratitude Log",
-    description: "Cultivate positivity by recording things you're thankful for each day.",
-    icon: "💖"
-  },
+ 
   {
     title: "Meditation Timer",
     description: "A clean and simple timer for your daily meditation practice.",
@@ -35,19 +26,13 @@ const smallApps = [
     title: "Sleep Stories",
     description: "Listen to calming bedtime stories and soundscapes to improve sleep quality.",
     icon: "🌙",
-    path: "/Small Apps/sleep-stories"
+    path: "/Small Apps/SleepStories"
   },
   {
     title: "Focus Booster",
     description: "Use the Pomodoro technique with soothing background sounds to stay productive.",
     icon: "⏳",
     path: "/Small Apps/focus"
-  },
-  {
-    title: "Energy Check",
-    description: "Log your energy levels and get tips on when to rest or recharge.",
-    icon: "⚡",
-    path: "/Small Apps/energy"
   },
   {
     title: "Stress Relief Sounds",
@@ -62,15 +47,14 @@ const smallApps = [
     path: "/Small Apps/habits"
   },
   {
-    title: "Kindness Journal",
-    description: "Record kind actions you’ve done or received to nurture compassion.",
-    icon: "🤝",
-    path: "/Small Apps/kindness"
-  },
-  {
     title: "Positive Affirmations",
     description: "Receive daily affirmations to boost your confidence and self-esteem.",
     icon: "✨"
+  },
+   {
+    title: "Mood Tracker",
+    description: "Track your daily mood and understand your emotional patterns over time.",
+    icon: "😊"
   }
 ];
 
@@ -80,7 +64,7 @@ export default function SmallApps (){
 <div className="bg-[#4F6483] min-h-screen py-16 px-4 sm:px-6 lg:px-8 pt-[120px]">
         <div className="max-w-7xl mx-auto text-center mb-12">
         <h1 className="text-4xl sm:text-5xl font-extrabold text-white drop-shadow-sm">
-          Small Apps
+        The Wellness Hub
         </h1>
         <p className="mt-4 text-lg text-white">
           Explore a collection of small tools designed to support your wellness journey.
