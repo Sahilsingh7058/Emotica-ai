@@ -1,4 +1,4 @@
-
+import React from 'react';
 import { Link } from "react-router-dom";
 
 // An array of objects to represent the small apps
@@ -15,7 +15,6 @@ const smallApps = [
     icon: "✍️",
     path: "/Small Apps/journal"
   },
- 
   {
     title: "Meditation Timer",
     description: "A clean and simple timer for your daily meditation practice.",
@@ -52,20 +51,15 @@ const smallApps = [
     icon: "✨",
     path: "/Small Apps/PositiveAff"
   },
-   {
-    title: "Mood Tracker",
-    description: "Track your daily mood and understand your emotional patterns over time.",
-    icon: "😊"
-  }
 ];
 
 // The SmallApps component with a grid layout
 export default function SmallApps (){
   return (
-<div className="bg-[#4F6483] min-h-screen py-16 px-4 sm:px-6 lg:px-8 pt-[120px]">
-        <div className="max-w-7xl mx-auto text-center mb-12">
+    <div className="bg-[#4F6483] min-h-screen py-16 px-4 sm:px-6 lg:px-8 pt-[120px]">
+      <div className="max-w-7xl mx-auto text-center mb-12">
         <h1 className="text-4xl sm:text-5xl font-extrabold text-white drop-shadow-sm">
-        The Wellness Hub
+          The Wellness Hub
         </h1>
         <p className="mt-4 text-lg text-white">
           Explore a collection of small tools designed to support your wellness journey.
@@ -89,16 +83,25 @@ export default function SmallApps (){
               {app.description}
             </p>
 
-            <Link
-              to={app.path}
-            >
+            {/* Fix: Conditionally render Link only if app.path exists */}
+            {app.path ? (
+              <Link
+                to={app.path}
+              >
                 <button
-            className="mt-4 px-6 py-2 bg-purple-600 text-white font-semibold rounded-full shadow-md hover:bg-purple-700 transition-colors"
-             >
-            Open App
-          </button>
-            </Link>
-
+                  className="mt-4 px-6 py-2 bg-purple-600 text-white font-semibold rounded-full shadow-md hover:bg-purple-700 transition-colors"
+                >
+                  Open App
+                </button>
+              </Link>
+            ) : (
+              <button
+                className="mt-4 px-6 py-2 bg-gray-400 text-white font-semibold rounded-full shadow-md cursor-not-allowed"
+                disabled
+              >
+                Coming Soon
+              </button>
+            )}
             
           </div>
         ))}
