@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, RefreshCw, Heart, Sun, Moon, Star } from 'lucide-react';
+import { RefreshCw, Heart, Star } from 'lucide-react';
 
 const affirmations = [
   "I am doing my best, and my best is enough.",
@@ -35,7 +35,7 @@ const affirmations = [
 ];
 
 const themes = [
-  { name: 'Lavender', bg: 'from-purple-50 via-violet-50 to-fuchsia-50', card: 'bg-white/90', accent: 'purple', icon: Star }
+  { name: 'Lavender', bg: 'from-purple-50 via-violet-50 to-fuchsia-50', card: 'bg-white', accent: 'purple', icon: Star }
 ];
 
 export default function AffirmationsApp() {
@@ -46,7 +46,6 @@ export default function AffirmationsApp() {
   const [favorites, setFavorites] = useState([]);
   
   const currentTheme = themes[theme];
-  const IconComponent = currentTheme.icon;
 
   const getRandomAffirmation = () => {
     let newIndex;
@@ -87,28 +86,23 @@ export default function AffirmationsApp() {
   const isFavorited = favorites.includes(currentAffirmation);
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br bg-[#4F6483] flex items-center justify-center p-4 transition-all duration-700`}>
-      <div className="max-w-2xl w-full space-y-6">
+    <div className={`min-h-screen bg-[#4F6483] flex flex-col items-center p-4 pt-[120px] pb-12 transition-all duration-700`}>
+      <div className="w-full max-w-4xl space-y-6">
         
-        {/* Header */}
-        <div className="text-center space-y-2 animate-fade-in">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <h1 className="text-5xl font-black text-white">
-              Daily <span className={`text-${currentTheme.accent}-500`}>Vibes</span>
-            </h1>
-          </div>
-          <p className="text-white text-lg font-medium">
+        <div className="text-center">
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-white drop-shadow-sm">
+            Daily Vibes
+          </h1>
+          <p className="mt-4 text-lg text-white">
             Take a breath. Receive your moment of peace. ✨
           </p>
         </div>
 
-        {/* Main Card */}
-        <div className={`${currentTheme.card} backdrop-blur-sm rounded-3xl shadow-2xl p-8 md:p-12 border-4 border-${currentTheme.accent}-200 transition-all duration-300`}>
+        <div className={`bg-white shadow-2xl rounded-3xl p-6 md:p-8 text-center h-fit border border-gray-100`}>
           
-          {/* Affirmation Display */}
-          <div className="min-h-[200px] flex items-center justify-center mb-8">
+          <div className="min-h-[100px] flex items-center justify-center mb-6">
             <p 
-              className={`text-2xl md:text-3xl font-bold text-center text-${currentTheme.accent}-700 transition-all duration-300 ${
+              className={`text-2xl md:text-3xl font-bold text-center text-purple-400 transition-all duration-300 ${
                 isAnimating ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
               }`}
             >
@@ -116,52 +110,52 @@ export default function AffirmationsApp() {
             </p>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
-            <button
-              onClick={displayNewAffirmation}
-              disabled={isAnimating}
-              className={`flex items-center gap-2 bg-${currentTheme.accent}-500 hover:bg-${currentTheme.accent}-600 text-white font-bold py-4 px-8 rounded-full shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed`}
-            >
-              <RefreshCw className={`w-5 h-5 ${isAnimating ? 'animate-spin' : ''}`} />
-              New Affirmation
-            </button>
+          <div className="bg-gray-50/80 rounded-2xl p-6 border border-gray-200">
+            <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+              <button
+                onClick={displayNewAffirmation}
+                disabled={isAnimating}
+                className={`flex w-full sm:w-auto items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                <RefreshCw className={`w-5 h-5 ${isAnimating ? 'animate-spin' : ''}`} />
+                New Affirmation
+              </button>
 
-            <button
-              onClick={toggleFavorite}
-              className={`flex items-center gap-2 ${
-                isFavorited 
-                  ? `bg-${currentTheme.accent}-500 text-white` 
-                  : 'bg-gray-100 text-gray-700'
-              } hover:bg-${currentTheme.accent}-400 hover:text-white font-semibold py-4 px-6 rounded-full shadow-md transition-all duration-200 hover:scale-105 active:scale-95`}
-            >
-              <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
-              {isFavorited ? 'Saved' : 'Save'}
-            </button>
+              <button
+                onClick={toggleFavorite}
+                className={`flex w-full sm:w-auto items-center justify-center gap-2 ${
+                  isFavorited 
+                    ? `bg-purple-600 text-white` 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                } font-semibold py-3 px-6 rounded-full shadow-md transition-all duration-200 hover:scale-105 active:scale-95`}
+              >
+                <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
+                {isFavorited ? 'Saved' : 'Save'}
+              </button>
+            </div>
+            
+            <div className="mt-6 flex items-center justify-center gap-3">
+              <span className="text-sm text-gray-500 font-medium">Theme:</span>
+              <button
+                onClick={cycleTheme}
+                className={`px-4 py-2 rounded-full bg-purple-100 text-purple-700 font-semibold text-sm hover:bg-purple-200 transition-all`}
+              >
+                {currentTheme.name} 🎨
+              </button>
+            </div>
           </div>
 
-          {/* Theme Selector */}
-          <div className="mt-8 flex items-center justify-center gap-3">
-            <span className="text-sm text-gray-500 font-medium">Theme:</span>
-            <button
-              onClick={cycleTheme}
-              className={`px-4 py-2 rounded-full bg-${currentTheme.accent}-100 text-${currentTheme.accent}-700 font-semibold text-sm hover:bg-${currentTheme.accent}-200 transition-all`}
-            >
-              {currentTheme.name} 🎨
-            </button>
-          </div>
         </div>
 
-        {/* Favorites Section */}
         {favorites.length > 0 && (
-          <div className={`${currentTheme.card} backdrop-blur-sm rounded-2xl shadow-lg p-6 border-2 border-${currentTheme.accent}-200`}>
-            <h3 className={`text-xl font-bold text-${currentTheme.accent}-700 mb-4 flex items-center gap-2`}>
-              <Heart className="w-5 h-5 fill-current" />
+          <div className={`bg-white backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-100`}>
+            <h3 className={`text-xl font-bold text-purple-700 mb-4 flex items-center gap-2`}>
+              <Heart className="w-5 h-5 fill-current text-purple-500" />
               Your Saved Affirmations ({favorites.length})
             </h3>
-            <div className="space-y-2 max-h-48 overflow-y-auto">
+            <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
               {favorites.map((fav, idx) => (
-                <div key={idx} className={`p-3 rounded-lg bg-${currentTheme.accent}-50 text-${currentTheme.accent}-700 text-sm`}>
+                <div key={idx} className={`p-3 rounded-lg bg-purple-50 text-purple-700 text-sm font-medium`}>
                   {fav}
                 </div>
               ))}
@@ -169,8 +163,7 @@ export default function AffirmationsApp() {
           </div>
         )}
 
-        {/* Footer */}
-        <p className="text-center text-gray-500 text-sm italic">
+        <p className="text-center text-gray-300 text-sm italic">
           Remember: Healing is a journey, not a race. You're doing great. 💚
         </p>
       </div>
