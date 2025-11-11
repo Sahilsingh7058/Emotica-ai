@@ -9,7 +9,7 @@ const fetchSleepStories = async () => {
   const systemPrompt =
     "You are a gentle storyteller specializing in peaceful, short narratives for sleep and relaxation. The stories should focus on natural, soothing imagery.";
   const userQuery =
-    "Generate 4 original calming bedtime stories with a title and content. Each story should be 3-4 paragraphs long, deeply relaxing, and use soft natural imagery.";
+    "Generate 4 original calming bedtime stories with a title and content. Each story should be 3-4 paragraphs long, deeply relaxing, and use soft natural imagery. ";
 
   const payload = {
     contents: [{ parts: [{ text: userQuery }] }],
@@ -161,7 +161,7 @@ const App = () => {
           <div className="flex items-center">
             <Moon className="w-8 h-8 text-indigo-300 mr-3 animate-pulse" />
             <h1 className="text-3xl font-extrabold text-white tracking-wider">
-              Sleep Stories
+              Bed Time Stories
             </h1>
           </div>
           {!selectedStory && (

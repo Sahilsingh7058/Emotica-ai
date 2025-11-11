@@ -23,7 +23,7 @@ const smallApps = [
     path: "/Small Apps/Meditation"
   },
   {
-    title: "Sleep Stories",
+    title: "Bed Time Stories",
     description: "Listen to calming bedtime stories and soundscapes to improve sleep quality.",
     icon: "🌙",
     path: "/Small Apps/SleepStories"
@@ -32,13 +32,13 @@ const smallApps = [
     title: "Focus Booster",
     description: "Use the Pomodoro technique with soothing background sounds to stay productive.",
     icon: "⏳",
-    path: "/Small Apps/focus"
+    path: "/Small Apps/Focus"
   },
   {
-    title: "Stress Relief Sounds",
+    title: "Emotion Based Music",
     description: "Play relaxing ambient sounds like rain, waves, or forest to ease stress.",
     icon: "🎶",
-    path: "/Small Apps/sounds"
+    path: "/Small Apps/EmotionBasedMusic"
   },
   {
     title: "Habit Builder",
@@ -49,7 +49,8 @@ const smallApps = [
   {
     title: "Positive Affirmations",
     description: "Receive daily affirmations to boost your confidence and self-esteem.",
-    icon: "✨"
+    icon: "✨",
+    path: "/Small Apps/PositiveAff"
   },
    {
     title: "Mood Tracker",

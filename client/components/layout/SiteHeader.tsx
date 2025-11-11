@@ -20,8 +20,7 @@ export default function SiteHeader() {
   useEffect(() => {
     // Handler function to check the scroll position
     const handleScroll = () => {
-      // Set isScrolled to true if the scroll position is greater than 50px
-      // This is the threshold to trigger the navbar change
+      
       if (window.scrollY > 50) {
         setIsScrolled(true);
       } else {
@@ -63,7 +62,7 @@ const navLinkClasses = isScrolled
               className={({ isActive }) =>
                 [
                   "uppercase text-sm tracking-widest font-semibold drop-shadow transition-colors",
-                  isActive ? "text-white" : "text-white/90 hover:text-white",
+                  isActive ? "text-black bg-white/30 p-3 rounded-2xl" : "text-white/90 hover:text-white",
                 ].join(" ")
               }
             >

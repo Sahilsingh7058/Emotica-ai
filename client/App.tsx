@@ -18,6 +18,10 @@ import Emotica from "./components/Emotica";
 import SmallApps from "./pages/SmallApps";
 import Meditation from "./pages/Small Apps/Meditation";
 import Sleep from "./pages/Small Apps/SleepStories";
+import Focus from "./pages/Small Apps/Focus";
+import PositiveAff from "./pages/Small Apps/PositiveAff";
+import EmotionBasedMusic from "./pages/Small Apps/EmotionBasedMusic";
+
 
 const queryClient = new QueryClient();
 
@@ -42,6 +46,10 @@ const App = () => (
             <Route path="/Small Apps/Breathing" element={<Breathing />} />
             <Route path="/Small Apps/Meditation" element={<Meditation />} />
             <Route path="/Small Apps/SleepStories" element={<Sleep />} />
+            <Route path="/Small Apps/Focus" element={<Focus />} />
+            <Route path="/Small Apps/PositiveAff" element={<PositiveAff />} />
+            <Route path="/Small Apps/EmotionBasedMusic" element={<EmotionBasedMusic />} />
+
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

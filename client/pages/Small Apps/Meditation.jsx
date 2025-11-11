@@ -66,15 +66,15 @@ const MeditationTimer = () => {
     setStatus('Ready to focus.');
   };
 
-  // Progress Circle Calculation
+  // 🕒 Progress Circle
   const progressPercent = ((duration - timeLeft) / duration) * 100;
   const strokeDashoffset = CIRCUMFERENCE - (CIRCUMFERENCE * progressPercent) / 100;
 
   return (
-    <div className="flex flex-col items-center py-8 px-4 w-full min-h-screen bg-gradient-to-b from-purple-50 to-white pt-">
-      <div className="max-w-xl w-full bg-white p-8 rounded-2xl shadow-xl border border-gray-100 ">
+    <div className="flex flex-col items-center py-8 px-4 w-full min-h-screen bg-gradient-to-b from-purple-50 to-white">
+      <div className="max-w-xl w-full bg-white p-8 rounded-2xl shadow-xl border border-gray-100 mt-24">
         {/* Title */}
-        <h1 className="text-4xl font-extrabold text-center text-purple-700 mb-3 relative z-10">
+        <h1 className="text-4xl font-extrabold text-center text-purple-700 mb-3">
           Meditation Timer
         </h1>
         <p className="text-center text-gray-500 mb-8">
@@ -161,10 +161,10 @@ const MeditationTimer = () => {
         <div className="flex space-x-4">
           <button
             onClick={handleStartPause}
-            className={`flex-1 py-3 px-4 rounded-full text-white font-bold text-lg shadow-md transition-all ${
+            className={`flex-1  rounded-full text-white transition-all ${
               isRunning
                 ? 'bg-yellow-500 hover:bg-yellow-600'
-                : 'bg-green-900 hover:bg-green-900'
+                : 'bg-blue-500 hover:bg-blue-600'
             }`}
           >
             {isRunning ? 'Pause' : 'Start'}
