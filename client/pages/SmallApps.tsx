@@ -43,7 +43,7 @@ const smallApps = [
     title: "Habit Builder",
     description: "Build healthy habits with streaks, reminders, and motivational nudges.",
     icon: "📅",
-    path: "/Small Apps/habits"
+    path: "/Small Apps/HabitBuilder"
   },
   {
     title: "Positive Affirmations",

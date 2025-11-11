@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from typing import List
 from app.assessmentData import questions
 
-router = APIRouter()  # ✅ THIS LINE WAS MISSING
+router = APIRouter() 
 
 class AssessmentAnswers(BaseModel):
     answers: List[str]
@@ -26,7 +26,7 @@ async def get_assessment_questions():
 @router.post("/submit")
 async def submit_assessment(assessment_answers: AssessmentAnswers):
     user_answers = assessment_answers.answers
-
+    
     if not user_answers or len(user_answers) != len(questions):
         return {"error": "Incomplete assessment data."}
 

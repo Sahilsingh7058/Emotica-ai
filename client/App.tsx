@@ -21,6 +21,7 @@ import Sleep from "./pages/Small Apps/SleepStories";
 import Focus from "./pages/Small Apps/Focus";
 import PositiveAff from "./pages/Small Apps/PositiveAff";
 import EmotionBasedMusic from "./pages/Small Apps/EmotionBasedMusic";
+import HabitBuilder from "./pages/Small Apps/HabitBuilder";
 
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ const App = () => (
             <Route path="/Small Apps/Focus" element={<Focus />} />
             <Route path="/Small Apps/PositiveAff" element={<PositiveAff />} />
             <Route path="/Small Apps/EmotionBasedMusic" element={<EmotionBasedMusic />} />
+            <Route path="/Small Apps/HabitBuilder" element={<HabitBuilder />} />
 
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
