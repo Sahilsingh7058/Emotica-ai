@@ -125,3 +125,59 @@ body {
 body {
   -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
 }
+
+/* ── Custom animations ──────────────────────────────────────────────── */
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33%       { transform: translateY(-14px) rotate(1deg); }
+  66%       { transform: translateY(-7px) rotate(-1deg); }
+}
+
+@keyframes orb-pulse {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50%       { opacity: 0.30; transform: scale(1.12); }
+}
+
+@keyframes highlight-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(168, 85, 247, 0.35),
+      0 0 60px rgba(168, 85, 247, 0.15),
+      inset 0 0 30px rgba(168, 85, 247, 0.05);
+  }
+  50% {
+    box-shadow:
+      0 0 40px rgba(168, 85, 247, 0.60),
+      0 0 100px rgba(168, 85, 247, 0.25),
+      inset 0 0 40px rgba(168, 85, 247, 0.10);
+  }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+.animate-float {
+  animation: float 7s ease-in-out infinite;
+}
+
+.animate-orb-pulse {
+  animation: orb-pulse 5s ease-in-out infinite;
+}
+
+.animate-highlight-pulse {
+  animation: highlight-pulse 2.2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(168, 85, 247, 0.3) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2.5s linear infinite;
+}

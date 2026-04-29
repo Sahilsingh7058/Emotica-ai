@@ -1,321 +1,323 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Logo2 from "./img/Logo2.png";
+import { useAuth } from "@/context/AuthContext";
 
-declare global {
-  interface Window {
-    webkitSpeechRecognition: any;
-  }
+declare global { interface Window { webkitSpeechRecognition: any } }
+
+interface Message {
+  id: string;
+  sender: "assistant" | "user";
+  text: string;
+  timestamp: Date;
 }
 
-const EmoticaAI = () => {
-  const [messages, setMessages] = useState([
+interface GeminiPart { text: string }
+interface GeminiContent { role: "user" | "model"; parts: GeminiPart[] }
+
+const API_KEY = "AIzaSyA7370sbYTvrzpz_uHCO0HJ4nIsdW-E1Io";
+const TEXT_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
+const BG = "linear-gradient(135deg, #0d0f1e 0%, #1a0533 50%, #0d1a3a 100%)";
+
+// Detect emotional tone of user message
+function detectTone(msg: string): "distressed" | "anxious" | "positive" | "neutral" {
+  const lower = msg.toLowerCase();
+  if (/\b(suicid|hurt myself|self.harm|kill|hopeless|can't go on|end it)\b/.test(lower)) return "distressed";
+  if (/\b(anxious|panic|scared|overwhelm|stress|worry|nervous|can't breathe)\b/.test(lower)) return "anxious";
+  if (/\b(happy|great|amazing|grateful|excited|love|wonderful|joy)\b/.test(lower)) return "positive";
+  return "neutral";
+}
+
+function buildSystemPrompt(user: { name: string } | null, recentMood?: string): string {
+  const userName = user ? user.name.split(" ")[0] : "there";
+  const moodContext = recentMood ? `The user's most recent wellness check-in result was: "${recentMood}". ` : "";
+
+  return `You are Emotica, a compassionate AI mental wellness companion. ${moodContext}
+
+You are talking with ${userName}. Your role:
+- Listen deeply and validate feelings without jumping to solutions
+- Ask one thoughtful follow-up question per response to encourage reflection
+- Offer specific, actionable coping techniques when appropriate
+- Recommend the app's wellness tools naturally when relevant (breathing, journaling, meditation, sounds)
+- If someone seems in crisis, gently encourage professional help and provide crisis line information
+- Keep responses warm, concise (2-4 sentences), and free of clinical jargon
+- Never diagnose or replace professional mental health care
+- Remember context from earlier in this conversation
+
+Wellness tools you can recommend: Breathing App, Meditation Timer, Stress Relief Sounds, Journal, Habit Builder, Mood Tracker, Gratitude Log, Focus Booster, Sleep Stories, Positive Affirmations.`;
+}
+
+const retryFetch = async (url: string, options: RequestInit, retries = 3, delay = 1000): Promise<Response> => {
+  try {
+    const res = await fetch(url, options);
+    if (res.status === 429 && retries > 0) {
+      await new Promise(r => setTimeout(r, delay));
+      return retryFetch(url, options, retries - 1, delay * 2);
+    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res;
+  } catch (err) {
+    if (retries > 0) {
+      await new Promise(r => setTimeout(r, delay));
+      return retryFetch(url, options, retries - 1, delay * 2);
+    }
+    throw err;
+  }
+};
+
+const cleanForSpeech = (text: string) =>
+  text.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, "");
+
+export default function EmoticaAI() {
+  const { user } = useAuth();
+  const [messages, setMessages] = useState<Message[]>([
     {
+      id: "0",
       sender: "assistant",
-      text: "Hi there! Click the microphone button and talk to me about what's on your mind. I'm here to listen. You can also type your message or try the features below!",
+      text: `Hi${user ? " " + user.name.split(" ")[0] : ""}! 👋 I'm Emotica, your mental wellness companion. How are you feeling right now? You can talk to me, or use the mic button to speak.`,
+      timestamp: new Date(),
     },
   ]);
-  const [statusText, setStatusText] = useState("Click to start talking.");
+  const [conversationHistory, setConversationHistory] = useState<GeminiContent[]>([]);
   const [inputText, setInputText] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const chatAreaRef = useRef(null);
-  const recognitionRef = useRef(null);
+  const [statusText, setStatusText] = useState("Click the mic to start talking.");
 
-  const API_KEY = "AIzaSyA7370sbYTvrzpz_uHCO0HJ4nIsdW-E1Io";
-  const TEXT_API_URL =
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
+  const chatRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<any>(null);
 
-  // Auto-scroll chat
+  const addMessage = useCallback((text: string, sender: "user" | "assistant") => {
+    const msg: Message = { id: Date.now().toString(), text, sender, timestamp: new Date() };
+    setMessages(prev => [...prev, msg]);
+    return msg;
+  }, []);
+
   useEffect(() => {
-    if (chatAreaRef.current) {
-      chatAreaRef.current.scrollTop = chatAreaRef.current.scrollHeight;
-    }
+    chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
-  // Simple fetch with retry
-  const retryFetch = async (url, options, retries = 3, delay = 1000) => {
-    try {
-      const response = await fetch(url, options);
-      if (!response.ok) {
-        if (response.status === 429 && retries > 0) {
-          await new Promise((res) => setTimeout(res, delay));
-          return retryFetch(url, options, retries - 1, delay * 2);
-        }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response;
-    } catch (error) {
-      if (retries > 0) {
-        await new Promise((res) => setTimeout(res, delay));
-        return retryFetch(url, options, retries - 1, delay * 2);
-      }
-      throw error;
-    }
-  };
-
-  // 🔊 Speak with browser voice
-  const speakText = (text) => {
-    if (!("speechSynthesis" in window)) return;
-  
-    const utterance = new SpeechSynthesisUtterance(cleanTextForSpeech(text));
-    const voices = window.speechSynthesis.getVoices();
-    const femaleVoice =
-      voices.find(v => v.name.toLowerCase().includes("female")) ||
-      voices.find(v => v.name.toLowerCase().includes("zira")) || // Windows
-      voices.find(v => v.name.toLowerCase().includes("samantha")) || // Mac
-      voices.find(v => v.lang === "en-US");
-  
-    if (femaleVoice) utterance.voice = femaleVoice;
-  
-    utterance.rate = 1.1;
-    utterance.pitch = 1.1;
-    window.speechSynthesis.speak(utterance);
-  };
-
-  // Speech recognition
   useEffect(() => {
     if (!("webkitSpeechRecognition" in window)) {
       setStatusText("Voice recognition not supported in this browser.");
       return;
     }
+    const rec = new window.webkitSpeechRecognition();
+    rec.continuous = false;
+    rec.lang = "en-US";
+    rec.interimResults = false;
+    recognitionRef.current = rec;
 
-    const newRecognition = new window.webkitSpeechRecognition();
-    newRecognition.continuous = false;
-    newRecognition.lang = "en-US";
-    newRecognition.interimResults = false;
-
-    recognitionRef.current = newRecognition;
-
-    newRecognition.onstart = () => {
-      setIsRecording(true);
-      setStatusText("Listening...");
+    rec.onstart = () => { setIsRecording(true); setStatusText("Listening…"); };
+    rec.onend   = () => { setIsRecording(false); setStatusText("Processing…"); };
+    rec.onresult = async (e: any) => {
+      const t = e.results[0][0].transcript;
+      if (t.trim()) await handleRequest(t);
     };
+    rec.onerror = () => { setIsRecording(false); setStatusText("Error. Please try again."); };
 
-    newRecognition.onend = () => {
-      setIsRecording(false);
-      setStatusText("Processing...");
-    };
-
-    newRecognition.onresult = async (event) => {
-      const transcript = event.results[0][0].transcript;
-      if (transcript.trim()) {
-        await handleRequest(transcript);
-      }
-    };
-
-    newRecognition.onerror = (event) => {
-      console.error("Speech Recognition Error:", event.error);
-      setIsRecording(false);
-      setStatusText("Error. Please try again.");
-    };
-
-    return () => {
-      if (recognitionRef.current) {
-        recognitionRef.current.onresult = null;
-        recognitionRef.current.onerror = null;
-        recognitionRef.current.onend = null;
-      }
-    };
+    return () => { rec.onresult = null; rec.onerror = null; rec.onend = null; };
   }, []);
 
-  const addMessage = (text, sender) => {
-    setMessages((prev) => [...prev, { text, sender }]);
+  const speakText = (text: string) => {
+    if (!("speechSynthesis" in window)) return;
+    const utt = new SpeechSynthesisUtterance(cleanForSpeech(text));
+    const voices = window.speechSynthesis.getVoices();
+    const voice = voices.find(v => v.name.toLowerCase().includes("female"))
+      || voices.find(v => v.name.toLowerCase().includes("zira"))
+      || voices.find(v => v.name.toLowerCase().includes("samantha"))
+      || voices.find(v => v.lang === "en-US");
+    if (voice) utt.voice = voice;
+    utt.rate = 1.05; utt.pitch = 1.05;
+    window.speechSynthesis.speak(utt);
   };
 
-  const requestMicrophonePermission = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach(track => track.stop());
-      return true;
-    } catch (error) {
-      console.error("Microphone permission denied:", error);
-      if (error.name === "NotAllowedError") {
-        setStatusText("Microphone permission denied. Please enable it.");
-      } else {
-        setStatusText("Error accessing microphone.");
-      }
-      return false;
-    }
+  const callGemini = async (userMessage: string, history: GeminiContent[]): Promise<string> => {
+    const tone = detectTone(userMessage);
+
+    // If distressed, prepend a crisis-aware override into the history
+    const safetyPrefix: GeminiContent[] = tone === "distressed" ? [{
+      role: "model",
+      parts: [{ text: "I hear that you're going through something really painful right now. Your feelings are valid. If you're having thoughts of hurting yourself, please reach out to a crisis line like 988 (Suicide & Crisis Lifeline in the US) or text HOME to 741741. I'm here with you — can you tell me more about what's happening?" }]
+    }] : [];
+
+    const systemPrompt = buildSystemPrompt(user ?? null);
+    const contents: GeminiContent[] = [...history, { role: "user", parts: [{ text: userMessage }] }];
+
+    const payload = {
+      system_instruction: { parts: [{ text: systemPrompt }] },
+      contents: tone === "distressed" ? [...safetyPrefix, ...contents] : contents,
+      generationConfig: {
+        temperature: tone === "anxious" ? 0.6 : 0.85,
+        maxOutputTokens: 300,
+      },
+    };
+
+    const res = await retryFetch(TEXT_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    return data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "I'm here — please try again in a moment.";
   };
 
-  const handleRequest = async (userMessage) => {
+  const handleRequest = async (userMessage: string) => {
     setIsLoading(true);
     addMessage(userMessage, "user");
-    setStatusText("Generating response...");
+    setStatusText("Thinking…");
 
-    const lowerCaseMessage = userMessage.toLowerCase();
-    if (lowerCaseMessage.includes("meditation")) {
-      await startMeditation();
-    } else if (lowerCaseMessage.includes("prompt")) {
-      await getCreativePrompt();
-    } else {
-      const textResponse = await getTextFromLLM(userMessage);
-      addMessage(textResponse, "assistant");
-      speakText(textResponse); // use browser voice
+    try {
+      const reply = await callGemini(userMessage, conversationHistory);
+
+      // Update conversation history for multi-turn context (keep last 12 turns = 6 exchanges)
+      setConversationHistory(prev => [
+        ...prev.slice(-10),
+        { role: "user", parts: [{ text: userMessage }] },
+        { role: "model", parts: [{ text: reply }] },
+      ]);
+
+      addMessage(reply, "assistant");
+      speakText(reply);
+    } catch {
+      addMessage("I'm having trouble connecting right now. Please try again.", "assistant");
+    } finally {
+      setStatusText("Click the mic to start talking.");
+      setIsLoading(false);
     }
-
-    setStatusText("Click to start talking.");
-    setIsLoading(false);
   };
 
   const handleTextSubmit = async () => {
     if (!inputText.trim() || isLoading) return;
-    const message = inputText;
+    const msg = inputText.trim();
     setInputText("");
-    await handleRequest(message);
+    await handleRequest(msg);
   };
 
-  const startMeditation = async () => {
-    setStatusText("Generating meditation...");
-    const meditationPrompt =
-      "Create a short and calming guided breathing meditation script for a young person. No more than 3-4 sentences.";
-    const script = await getTextFromLLM(meditationPrompt);
-    addMessage(script, "assistant");
-    speakText(script);
-  };
-
-  const getCreativePrompt = async () => {
-    setStatusText("Generating prompt...");
-    const promptPrompt =
-      "Generate a short, creative writing prompt for a young person to express their feelings.";
-    const creativeText = await getTextFromLLM(promptPrompt);
-    addMessage(creativeText, "assistant");
-    speakText(creativeText);
-  };
-  const cleanTextForSpeech = (text: string) => {
-    // Remove all emojis and other pictographic symbols
-    return text.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, "");
-  };
-  const getTextFromLLM = async (prompt) => {
-    const payload = {
-      contents: [{ parts: [{ text: prompt }] }],
-      systemInstruction: {
-        parts: [
-          {
-            text: "You are an empathetic and supportive emotional wellness assistant for youth. Be kind, simple, and encouraging.",
-          },
-        ],
-      },
-    };
+  const toggleMic = async () => {
+    if (isRecording) { recognitionRef.current?.stop(); return; }
     try {
-      const response = await retryFetch(TEXT_API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const result = await response.json();
-      return (
-        result?.candidates?.[0]?.content?.parts?.[0]?.text ||
-        "I'm having a bit of trouble right now. Please try again."
-      );
-    } catch (error) {
-      console.error("Error fetching text from Gemini:", error);
-      return "I'm sorry, something went wrong.";
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach(t => t.stop());
+      recognitionRef.current?.start();
+    } catch {
+      setStatusText("Microphone permission denied.");
     }
   };
 
+  const sendQuickPrompt = (prompt: string) => {
+    if (!isLoading) handleRequest(prompt);
+  };
+
+  const quickActions = [
+    { label: "🧘 Guide me through breathing", prompt: "Guide me through a quick breathing exercise." },
+    { label: "✍️ Journal prompt", prompt: "Give me a journaling prompt for today." },
+    { label: "💭 I need to vent", prompt: "I just need to vent about something." },
+    { label: "😴 Help me sleep", prompt: "I can't sleep. What can I do?" },
+  ];
+
   return (
-    <div className="bg-[#4F6483] flex items-center justify-center min-h-screen p-4 pt-[100px] font-sans text-gray-800">
-      <div className="max-w-xl w-full bg-white/85 backdrop-blur-lg rounded-3xl shadow-2xl flex flex-col min-h-[80vh] overflow-hidden border border-gray-100">
-        
+    <div className="min-h-screen flex items-center justify-center p-4 pt-24 relative overflow-hidden" style={{ background: BG }}>
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full blur-3xl opacity-20 animate-orb-pulse"
+          style={{ background: "radial-gradient(circle, #7c3aed, transparent)" }} />
+        <div className="absolute bottom-1/4 -right-32 w-80 h-80 rounded-full blur-3xl opacity-15 animate-orb-pulse"
+          style={{ background: "radial-gradient(circle, #2563eb, transparent)", animationDelay: "2s" }} />
+      </div>
+
+      <div className="relative z-10 w-full max-w-xl flex flex-col" style={{ height: "84vh" }}>
         {/* Header */}
-        <div className="header bg-gradient-to-r from-purple-600 to-purple-400 text-white text-center p-6 shadow-lg rounded-t-3xl">
-          <h1 className="text-3xl font-bold tracking-tight">Emotica AI</h1>
-          <p className="text-sm opacity-90 mt-1">
-            Voice Assistant for Mental Wellness
-          </p>
+        <div className="flex-shrink-0 rounded-t-3xl px-6 py-4 border-b border-white/8"
+          style={{ background: "linear-gradient(135deg, rgba(124,58,237,0.3), rgba(99,102,241,0.2))", backdropFilter: "blur(20px)" }}>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-extrabold" style={{ background: "linear-gradient(135deg, #fff, #c4b5fd)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                Emotica AI
+              </h1>
+              <p className="text-white/35 text-xs">Voice & text wellness companion</p>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-white/40 text-xs">Online</span>
+            </div>
+          </div>
         </div>
 
-        {/* Chat Area */}
-        <div
-          ref={chatAreaRef}
-          className="chat-area flex-1 p-6 space-y-4 overflow-y-auto bg-gray-50/70"
-        >
-          {messages.map((msg, idx) => (
-            <div
-              key={idx}
-              className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`px-5 py-3 rounded-2xl shadow-md max-w-[85%] ${
-                  msg.sender === "user"
-                    ? "bg-blue-500 text-white"
-                    : "bg-white text-gray-800"
-                }`}
-              >
-                {msg.text}
+        {/* Chat area */}
+        <div ref={chatRef} className="flex-1 overflow-y-auto px-5 py-5 space-y-4"
+          style={{ background: "rgba(255,255,255,0.03)", backdropFilter: "blur(12px)" }}>
+          <AnimatePresence initial={false}>
+            {messages.map((msg) => (
+              <motion.div key={msg.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}
+                className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
+                <div className={["px-4 py-3 rounded-2xl text-sm leading-relaxed max-w-[82%] shadow-md",
+                  msg.sender === "user" ? "text-white rounded-br-sm" : "text-white/85 border border-white/10 rounded-bl-sm"].join(" ")}
+                  style={msg.sender === "user"
+                    ? { background: "linear-gradient(135deg, #7c3aed, #a855f7)" }
+                    : { background: "rgba(255,255,255,0.07)", backdropFilter: "blur(8px)" }}>
+                  {msg.text}
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+
+          {isLoading && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
+              <div className="px-5 py-3 rounded-2xl rounded-bl-sm border border-white/10 flex gap-1 items-center"
+                style={{ background: "rgba(255,255,255,0.07)" }}>
+                {[0, 0.2, 0.4].map((d, i) => (
+                  <motion.div key={i} className="w-1.5 h-1.5 rounded-full bg-purple-400"
+                    animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.7, delay: d }} />
+                ))}
               </div>
-            </div>
+            </motion.div>
+          )}
+        </div>
+
+        {/* Quick action chips */}
+        <div className="flex-shrink-0 px-4 py-2 border-t border-white/8 flex gap-2 overflow-x-auto scrollbar-hide"
+          style={{ background: "rgba(255,255,255,0.03)" }}>
+          {quickActions.map((a) => (
+            <button key={a.label} onClick={() => sendQuickPrompt(a.prompt)} disabled={isLoading}
+              className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium text-white/50 border border-white/10 bg-white/5 hover:bg-white/10 hover:text-white/80 transition-all disabled:opacity-40">
+              {a.label}
+            </button>
           ))}
         </div>
 
-        {/* Feature Buttons */}
-        <div className="flex gap-2 flex-wrap justify-center p-4">
-          <button
-            onClick={startMeditation}
-            className="px-5 py-3 bg-white hover:bg-gray-100 rounded-full text-sm font-medium shadow-sm transition-transform hover:scale-105"
-            disabled={isLoading}
-          >
-            Guided Meditation ✨
-          </button>
-          <button
-            onClick={getCreativePrompt}
-            className="px-5 py-3 bg-white hover:bg-gray-100 rounded-full text-sm font-medium shadow-sm transition-transform hover:scale-105"
-            disabled={isLoading}
-          >
-            Creative Prompt ✨
-          </button>
-        </div>
-
-        {/* Input Area */}
-        <div className="flex flex-col items-center gap-4 p-6 border-t border-gray-200">
-          <div className="flex w-full gap-2">
-            <input
-              type="text"
-              className="flex-1 p-3 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
-              placeholder="Type your message..."
-              value={inputText}
+        {/* Input area */}
+        <div className="flex-shrink-0 rounded-b-3xl px-5 py-5 border-t border-white/8"
+          style={{ background: "rgba(255,255,255,0.05)", backdropFilter: "blur(20px)" }}>
+          <div className="flex gap-3 mb-4">
+            <input type="text" placeholder="Type your message…" value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === "Enter") handleTextSubmit();
-              }}
-              disabled={isLoading}
-            />
-            <button
-              onClick={handleTextSubmit}
-              className="p-3 bg-purple-500 text-white rounded-full shadow-md hover:bg-purple-600"
-              disabled={isLoading}
-            >
+              onKeyDown={(e) => e.key === "Enter" && handleTextSubmit()} disabled={isLoading}
+              className="flex-1 px-4 py-3 rounded-xl border border-white/10 text-sm focus:outline-none focus:border-purple-500/50 transition-colors disabled:opacity-50"
+              style={{ background: "rgba(255,255,255,0.1)", color: "white" }} />
+            <motion.button onClick={handleTextSubmit} disabled={isLoading || !inputText.trim()}
+              whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}
+              className="px-4 py-3 rounded-xl font-bold text-white transition-all disabled:opacity-30"
+              style={{ background: "linear-gradient(135deg, #7c3aed, #a855f7)" }}>
               ➤
-            </button>
+            </motion.button>
           </div>
-          <button
-            onClick={async () => {
-              if (isRecording) {
-                recognitionRef.current.stop();
-              } else {
-                const granted = await requestMicrophonePermission();
-                if (granted) recognitionRef.current.start();
-              }
-            }}
-            className={`w-16 h-16 rounded-full flex items-center justify-center shadow-lg ${
-              isRecording ? "bg-purple-300 animate-pulse" : "bg-purple-500"
-            } ${isLoading ? "cursor-not-allowed opacity-50" : ""}`}
-            disabled={isLoading}
-          >
-            <img
-              src={Logo2}
-              alt="Emotica"
-              className="h-12 md:h-14 lg:h-[70px] w-auto select-none"
-              draggable={false}
-            />
-          </button>
-          <p className="text-gray-600 text-sm mt-1">{statusText}</p>
+
+          <div className="flex flex-col items-center gap-2">
+            <motion.button onClick={toggleMic} disabled={isLoading}
+              whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.94 }}
+              className={`w-16 h-16 rounded-full flex items-center justify-center shadow-xl ${isLoading ? "opacity-40 cursor-not-allowed" : ""}`}
+              style={{
+                background: isRecording ? "linear-gradient(135deg, #a855f7, #7c3aed)" : "linear-gradient(135deg, #7c3aed, #6366f1)",
+                boxShadow: isRecording ? "0 0 30px rgba(168,85,247,0.7)" : "0 0 20px rgba(124,58,237,0.4)",
+              }}
+              animate={isRecording ? { scale: [1, 1.08, 1] } : {}}
+              transition={isRecording ? { repeat: Infinity, duration: 1 } : {}}>
+              <img src={Logo2} alt="Mic" className="h-10 w-auto select-none" draggable={false} />
+            </motion.button>
+            <p className="text-white/30 text-xs">{statusText}</p>
+          </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default EmoticaAI;
+}

@@ -1,23 +1,70 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { handleDemo } from "./routes/demo";
+import { saveAssessmentResponse } from "./db";
+import { optionalAuth, AuthRequest } from "./middleware/requireAuth";
+import authRoutes from "./routes/authRoutes";
+import analyticsRoutes from "./routes/analyticsRoutes";
+import journalRoutes from "./routes/journalRoutes";
+import streakRoutes from "./routes/streakRoutes";
 
 export function createServer() {
   const app = express();
 
-  // Middleware
-  app.use(cors());
-  app.use(express.json());
+  const isProd = process.env.NODE_ENV === "production";
+
+  app.use(cors({
+    origin: isProd
+      ? (process.env.CORS_ORIGINS ?? "").split(",").filter(Boolean)
+      : true,   // dev: allow all — Express runs as Vite middleware (same origin)
+    credentials: true,
+  }));
+  app.use(express.json({ limit: "1mb" }));
   app.use(express.urlencoded({ extended: true }));
 
-  // Example API routes
+  // ── Health check ──────────────────────────────────────────────────────────
   app.get("/api/ping", (_req, res) => {
-    const ping = process.env.PING_MESSAGE ?? "ping";
-    res.json({ message: ping });
+    res.json({ message: process.env.PING_MESSAGE ?? "pong", version: "2.0.0" });
   });
 
-  app.get("/api/demo", handleDemo);
+  // ── Auth ──────────────────────────────────────────────────────────────────
+  app.use("/api/auth", authRoutes);
+
+  // ── Analytics / Mood ─────────────────────────────────────────────────────
+  app.use("/api/mood", analyticsRoutes);
+
+  // ── Journal ───────────────────────────────────────────────────────────────
+  app.use("/api/journal", journalRoutes);
+
+  // ── Streaks + Usage ───────────────────────────────────────────────────────
+  app.use("/api/streak", streakRoutes);
+
+  // ── Assessment save (optionally attaches user from token) ─────────────────
+  app.post("/api/assessment/save", optionalAuth, (req: AuthRequest, res) => {
+    try {
+      const { mood, description, suggestion, suggestedAppId, totalScore, answers } = req.body;
+
+      if (!mood || !description || !suggestion || !Array.isArray(answers)) {
+        res.status(400).json({ success: false, error: "Missing required fields" });
+        return;
+      }
+
+      const id = saveAssessmentResponse({
+        userId: req.user?.userId,
+        mood,
+        description,
+        suggestion,
+        suggestedAppId,
+        totalScore,
+        answers,
+      });
+
+      res.json({ success: true, id });
+    } catch (error) {
+      console.error("Failed to save assessment:", error);
+      res.status(500).json({ success: false, error: "Failed to save assessment response" });
+    }
+  });
 
   return app;
 }

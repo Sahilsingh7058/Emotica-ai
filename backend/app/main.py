@@ -1,14 +1,11 @@
-# backend/app/main.py
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorClient
 from fastapi.middleware.cors import CORSMiddleware
-from ..database.connection import users_collection
-from ..routes import assessmentRoutes
+from routes import assessmentRoutes
 
 app = FastAPI()
 
-# ✅ THE FIX: Use a wildcard to allow all local origins for development
 origins = ["*"]
 
 app.add_middleware(
@@ -25,7 +22,6 @@ app.include_router(
     tags=["Assessment"],
 )
 
-# --- Your existing user routes remain unchanged ---
 class User(BaseModel):
     name: str
     email: str

@@ -6,44 +6,79 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import { AuthProvider } from "@/context/AuthContext";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+
+import RootLayout from "@/components/layout/RootLayout";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import RootLayout from "@/components/layout/RootLayout";
 import Journal from "@/pages/Journal";
-import Breathing from "@/pages/Small Apps/Breathing";
 import Community from "@/pages/Community";
 import Support from "@/pages/Support";
 import Profile from "@/pages/Profile";
 import Emotica from "./components/Emotica";
 import SmallApps from "./pages/SmallApps";
+import Dashboard from "./pages/Dashboard";
 
-const queryClient = new QueryClient();
+// Small Apps
+import Breathing from "@/pages/Small Apps/Breathing";
+import MoodTracker from "@/pages/Small Apps/MoodTracker";
+import Gratitude from "@/pages/Small Apps/Gratitude";
+import MeditationTimer from "@/pages/Small Apps/MeditationTimer";
+import SleepStories from "@/pages/Small Apps/SleepStories";
+import FocusBooster from "@/pages/Small Apps/FocusBooster";
+import EnergyCheck from "@/pages/Small Apps/EnergyCheck";
+import Sounds from "@/pages/Small Apps/Sounds";
+import HabitBuilder from "@/pages/Small Apps/HabitBuilder";
+import Kindness from "@/pages/Small Apps/Kindness";
+import Affirmations from "@/pages/Small Apps/Affirmations";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { staleTime: 1000 * 60 * 2, retry: 1 },
+  },
+});
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route element={<RootLayout />}>
-          
-            <Route index element={<Index />} />
-            <Route path="journal" element={<Journal />} />
-            <Route path="community" element={<Community />} />
-            <Route path="support" element={<Support />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="emotica" element={<Emotica />} />
-            <Route path="smallapps" element={<SmallApps />} />
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route element={<RootLayout />}>
+                <Route index element={<Index />} />
+                <Route path="journal" element={<Journal />} />
+                <Route path="community" element={<Community />} />
+                <Route path="support" element={<Support />} />
+                <Route path="profile" element={<Profile />} />
+                <Route path="emotica" element={<Emotica />} />
+                <Route path="smallapps" element={<SmallApps />} />
+                <Route path="dashboard" element={<Dashboard />} />
 
-            <Route path="/Small Apps/Breathing" element={<Breathing />} />
-          </Route>
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+                {/* Small Apps */}
+                <Route path="apps/breathing" element={<Breathing />} />
+                <Route path="apps/mood" element={<MoodTracker />} />
+                <Route path="apps/gratitude" element={<Gratitude />} />
+                <Route path="apps/meditation" element={<MeditationTimer />} />
+                <Route path="apps/sleep" element={<SleepStories />} />
+                <Route path="apps/focus" element={<FocusBooster />} />
+                <Route path="apps/energy" element={<EnergyCheck />} />
+                <Route path="apps/sounds" element={<Sounds />} />
+                <Route path="apps/habits" element={<HabitBuilder />} />
+                <Route path="apps/kindness" element={<Kindness />} />
+                <Route path="apps/affirmations" element={<Affirmations />} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 createRoot(document.getElementById("root")!).render(<App />);
