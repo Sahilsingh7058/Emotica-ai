@@ -1,72 +1,199 @@
-Emotica AI 💜
-Emotica AI is a comprehensive web platform dedicated to supporting youth emotional wellness. It provides a safe, beautiful, and engaging space for users to explore 
-their feelings and access a suite of targeted tools designed to promote mental well-being.
-Built with React, Tailwind CSS, and powered by the Google Gemini API, Emotica AI offers a personalized and interactive experience to help users find balance, focus, and peace.
+# 🧠 Emotica — AI-Powered Mental Wellness Platform
 
-✨ Features
+Emotica is a full-stack mental wellness application that combines **behavioral assessment, intelligent recommendations, analytics, and AI conversation** to provide a personalized user experience.
 
-Wellness Hub: A central dashboard to access all wellness mini-applications.
+---
 
-🧘 Guided Breathing: A "Breathing App" with multiple patterns (e.g., Calm, Balance, Focus) and audio-visual cues to guide your practice.
+## 🚀 Features
 
-🎵 Emotion-Based Music: An AI-powered app that suggests music genres, activities, and YouTube search links based on your current mood.
+* 📝 Wellness Assessment (10-question scoring system)
+* 🧠 Intelligent Recommendation Engine (multi-dimensional analysis)
+* 📊 Analytics Dashboard (mood trends, insights, app usage)
+* 🤖 AI Chat Companion (context-aware + emotion detection)
+* 📓 Journal System (backend sync + guest fallback)
+* 🔐 JWT Authentication (secure user sessions)
+* 🎯 Personalized UX (highlighted recommendations)
 
-⏳ Meditation Timer: A clean, circular timer to help you focus on your meditation practice for a set duration.
+---
 
-🚀 Focus Booster: A Pomodoro timer with different modes (Focus, Short Break, Long Break) and optional ambient sounds to boost productivity.
+## 🏗️ Architecture
 
-✨ Positive Affirmations: A "Daily Vibes" app to receive and save uplifting affirmations, helping to build a positive mindset.
+### 🔹 Frontend
 
-...and more planned: Including a Journal, Bed Time Stories, and a Habit Builder.
+* React 18 + TypeScript (Vite)
+* React Router + Context API
+* TanStack React Query
 
-🛠️ Tech Stack
-Frontend: React (with Vite)
-Styling: Tailwind CSS
-AI & APIs: Google Gemini API
-Routing: React Router
-Animation: Framer Motion
-Icons: Lucide React
+### 🔹 Backend
 
-🚀 Getting Started
-To get a local copy up and running, follow these simple steps.
-Prerequisites
-Node.js (v18 or later)
-npm
-A Google Gemini API Key. You can get one from Google AI Studio.
+#### 1. FastAPI (Python)
 
-Installation
-1]Clone the repository:
-git clone [https://github.com/Sahilsingh7058/Emotica-ai.git](https://github.com/Sahilsingh7058/Emotica-ai.git)
+* Handles:
 
-2]Navigate to the client directory:
-This project uses a separate client folder for the React frontend.
-cd Emotica-ai/client
+  * Assessment scoring
+  * Recommendation engine
+* Stateless service (no DB)
 
-3]Install NPM packages:
+#### 2. Express.js (Node)
+
+* Handles:
+
+  * Authentication
+  * APIs
+  * Database operations
+
+### 🔹 Database
+
+* SQLite (`emotica.sqlite`)
+* WAL mode enabled
+* Relational schema with foreign keys
+
+---
+
+## 🔄 System Flow
+
+User → Assessment → FastAPI (scoring)
+→ Frontend displays result
+→ Express saves data → Dashboard & analytics use stored data
+
+---
+
+## 🔐 Authentication
+
+* JWT-based authentication
+* Password hashing using bcrypt
+* Token stored in localStorage
+* Auto session restoration on reload
+
+---
+
+## 🗄️ Database Schema
+
+* users
+* assessment_responses
+* journal_entries
+* app_usage
+* streaks
+* notifications
+
+---
+
+## 📊 Analytics Dashboard
+
+* 30-day mood trends
+* Mood distribution
+* App usage tracking
+* AI-generated insights
+* Streak tracking system
+
+---
+
+## 🧠 Recommendation Engine
+
+* 10 psychological dimensions
+* Each app mapped to dimension targets
+* Weighted scoring system
+* Returns top 3 recommendations with confidence %
+
+---
+
+## 🤖 AI Chat
+
+* Multi-turn conversation memory
+* Emotion detection (regex-based)
+* Crisis safety layer
+* Dynamic response tuning
+
+---
+
+## ⚙️ Setup Instructions
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/your-username/emotica.git
+cd emotica
+```
+
+---
+
+### 2. Backend Setup
+
+#### FastAPI
+
+```bash
+cd backend
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+#### Express
+
+```bash
+cd server
 npm install
-
-4]create your environment file:
-In the client directory, create a new file named .env and add your Gemini API key. (The React components look for this variable).
-VITE_GEMINI_API_KEY=YOUR_API_KEY_HERE
-
-5]Run the development server:
 npm run dev
+```
 
-6]Open http://localhost:5173 (or the port shown in your terminal) to view the app in your browser.
+---
 
-🧠 What I Learned
+### 3. Frontend Setup
 
-This project was a deep dive into building a modern, interactive, and AI-powered web application. Key learnings include:
-Component-Based Architecture: Structuring a complex application into reusable, self-contained React components (e.g., Breathing.tsx, MeditationTimer.jsx, FocusBooster.jsx).
-Advanced React Hooks: Utilizing useState, useEffect, useRef, useMemo, and useCallback to manage complex component state, timers, animations, and API calls efficiently.
-Client-Side Routing: Implementing a single-page application (SPA) using react-router-dom to create a seamless user experience between the "Wellness Hub" and the individual mini-apps.
-AI Integration (Gemini):
+```bash
+cd client
+npm install
+npm run dev
+```
 
-Calling the Gemini API to generate dynamic, personalized text content.
-Prompt Engineering: Designing detailed system prompts and user prompts to get a specific, structured JSON-like response from the AI (e.g., extracting a [YOUTUBE_QUERY:...] tag from a text blob).
-Browser APIs: Using the Web Audio API to generate procedural sounds (like beeps and ambient tones) from scratch, and the Web Speech API for voice-to-text input.
-Modern Styling & UX:
+---
 
-Creating a consistent, responsive, and visually appealing UI with Tailwind CSS.
-Applying a "card" based design system that works across different devices.
-Using Framer Motion and CSS transitions to add meaningful animations and user feedback.
+## 🔑 Environment Variables
+
+Create `.env` file:
+
+```
+JWT_SECRET=your_secret_key
+CORS_ORIGINS=http://localhost:5173
+GEMINI_API_KEY=your_api_key
+```
+
+---
+
+## 🌍 Deployment
+
+| Layer    | Platform                       |
+| -------- | ------------------------------ |
+| Frontend | Vercel                         |
+| FastAPI  | Render                         |
+| Express  | Railway                        |
+| Database | SQLite / upgrade to PostgreSQL |
+
+---
+
+## 📈 Future Improvements
+
+* PostgreSQL migration
+* Push notifications
+* ML-based recommendation engine
+* User profile analytics export
+
+---
+
+## 💡 Key Highlights
+
+* Dual-backend architecture (Python + Node)
+* Stateless recommendation engine
+* Real-time analytics dashboard
+* Context-aware AI system with safety layer
+
+---
+
+## 👨‍💻 Author
+
+Built by Sahil Singh
+
+---
+
+## 📄 License
+
+MIT License
