@@ -103,3 +103,86 @@ questions = [
         ],
     },
 ]
+
+daily_questions = [
+    {
+        "id": 1,
+        "question": "How would you rate your overall mood today?",
+        "options": [
+            {"text": "Excellent — felt happy and peaceful", "score": 0},
+            {"text": "Good — mostly positive", "score": 1},
+            {"text": "Neutral — flat or uninspired", "score": 2},
+            {"text": "Low — sad, angry, or anxious", "score": 3},
+        ],
+    },
+    {
+        "id": 2,
+        "question": "How did your physical energy hold up today?",
+        "options": [
+            {"text": "High — felt active and alert", "score": 0},
+            {"text": "Moderate — got through the day but felt tired", "score": 1},
+            {"text": "Low — felt sluggish or physically drained", "score": 2},
+            {"text": "Exhausted — barely had energy for basics", "score": 3},
+        ],
+    },
+    {
+        "id": 3,
+        "question": "How did you sleep last night?",
+        "options": [
+            {"text": "Deeply — woke up fully rested", "score": 0},
+            {"text": "Okay — some nights are rough but generally fine", "score": 1},
+            {"text": "Toss & turn — struggled to sleep or stay asleep", "score": 2},
+            {"text": "Very poorly — slept very little or not at all", "score": 3},
+        ],
+    },
+    {
+        "id": 4,
+        "question": "How often did you feel stressed or overwhelmed today?",
+        "options": [
+            {"text": "Not at all — felt calm and in control", "score": 0},
+            {"text": "A few times — manageable pressure", "score": 1},
+            {"text": "Frequently — stress disrupted my productivity or focus", "score": 2},
+            {"text": "Almost constantly — felt completely overwhelmed", "score": 3},
+        ],
+    },
+    {
+        "id": 5,
+        "question": "Did you connect with someone today (friends, family, colleagues)?",
+        "options": [
+            {"text": "Yes, deeply — had meaningful conversations", "score": 0},
+            {"text": "Yes, briefly — quick chats or messages", "score": 1},
+            {"text": "No — stayed to myself mostly", "score": 2},
+            {"text": "No, and felt very lonely or isolated", "score": 3},
+        ],
+    },
+    {
+        "id": 6,
+        "question": "How anxious or worried have you felt throughout the day?",
+        "options": [
+            {"text": "Hardly at all — felt secure and relaxed", "score": 0},
+            {"text": "Mildly — simple worries that passed quickly", "score": 1},
+            {"text": "Moderately — worry was hard to shake off", "score": 2},
+            {"text": "Severely — constant anxiety or panic", "score": 3},
+        ],
+    },
+    {
+        "id": 7,
+        "question": "Did you dedicate time to physical self-care today (healthy food, movement, hydration)?",
+        "options": [
+            {"text": "Yes — ate well, moved, and hydrated", "score": 0},
+            {"text": "Somewhat — met the basic needs", "score": 1},
+            {"text": "Neglected — skipped meals, inactive, or dehydrated", "score": 2},
+            {"text": "Completely ignored — paid no attention to physical health", "score": 3},
+        ],
+    },
+    {
+        "id": 8,
+        "question": "Did you find a sense of achievement or meaning in what you did today?",
+        "options": [
+            {"text": "Yes, absolutely — did something meaningful or satisfying", "score": 0},
+            {"text": "Yes, slightly — completed some tasks", "score": 1},
+            {"text": "No — the day felt repetitive or pointless", "score": 2},
+            {"text": "No, felt completely empty or useless", "score": 3},
+        ],
+    },
+]

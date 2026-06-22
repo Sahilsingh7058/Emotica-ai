@@ -7,6 +7,7 @@ Emotica is a full-stack mental wellness application that combines **behavioral a
 ## 🚀 Features
 
 * 📝 Wellness Assessment (10-question scoring system)
+* 🧠 Daily Wellness Check-in (8-question end-of-day assessment with instant dashboard sync)
 * 🧠 Intelligent Recommendation Engine (multi-dimensional analysis)
 * 📊 Analytics Dashboard (mood trends, insights, app usage)
 * 🤖 AI Chat Companion (context-aware + emotion detection)
@@ -80,11 +81,12 @@ User → Assessment → FastAPI (scoring)
 
 ## 📊 Analytics Dashboard
 
-* 30-day mood trends
-* Mood distribution
+* 30-day mood trends (dynamically populated by check-in assessments)
+* Mood distribution (reflects current day evaluation)
 * App usage tracking
-* AI-generated insights
+* AI-generated insights (personalized recommendations based on recent inputs)
 * Streak tracking system
+* End-of-day Daily Check-in CTA and glassmorphic wizard modal
 
 ---
 
@@ -190,7 +192,7 @@ GEMINI_API_KEY=your_api_key
 
 ## 👨‍💻 Author
 
-Built by Sahil Singh
+Built by Sahil Singh and Om Gharate
 
 ---
 

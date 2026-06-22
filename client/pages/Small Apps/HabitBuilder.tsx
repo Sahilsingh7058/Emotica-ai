@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth, useApiFetch } from "@/context/AuthContext";
 
 const BG = "linear-gradient(135deg, #0d0f1e 0%, #1a0533 50%, #0d1a3a 100%)";
 
@@ -10,42 +11,111 @@ const EMOJIS = ["💧", "🏃", "📚", "🧘", "🛏️", "🥗", "☀️", "�
 function todayStr() { return new Date().toDateString(); }
 
 export default function HabitBuilder() {
+  const { user } = useAuth();
+  const apiFetch = useApiFetch();
+
   const [habits, setHabits] = useState<Habit[]>([]);
   const [newName, setNewName] = useState("");
   const [newEmoji, setNewEmoji] = useState("💧");
   const [adding, setAdding] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("habits");
-    if (stored) setHabits(JSON.parse(stored));
-  }, []);
+    const loadHabits = async () => {
+      if (user) {
+        try {
+          const data = await apiFetch<Habit[]>("/api/habits");
+          setHabits(data);
+        } catch (err) {
+          console.error("Failed to load habits from server:", err);
+        }
+      } else {
+        const stored = localStorage.getItem("habits");
+        if (stored) setHabits(JSON.parse(stored));
+      }
+    };
+    loadHabits();
+  }, [user, apiFetch]);
 
-  const save = (updated: Habit[]) => { setHabits(updated); localStorage.setItem("habits", JSON.stringify(updated)); };
-
-  const addHabit = () => {
+  const addHabit = async () => {
     if (!newName.trim()) return;
     const h: Habit = { id: Date.now().toString(), name: newName.trim(), emoji: newEmoji, streak: 0, lastChecked: "", checks: [] };
-    save([h, ...habits]);
+    
+    // Optimistically update local state
+    const updated = [h, ...habits];
+    setHabits(updated);
+    
+    if (user) {
+      try {
+        await apiFetch("/api/habits", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: h.id, name: h.name, emoji: h.emoji })
+        });
+      } catch (err) {
+        console.error("Failed to save habit on server:", err);
+      }
+    } else {
+      localStorage.setItem("habits", JSON.stringify(updated));
+    }
+
     setNewName(""); setAdding(false);
   };
 
-  const toggleCheck = (id: string) => {
+  const toggleCheck = async (id: string) => {
     const today = todayStr();
-    save(habits.map((h) => {
+    let updatedHabit: Habit | null = null;
+
+    const updated = habits.map((h) => {
       if (h.id !== id) return h;
       const alreadyChecked = h.lastChecked === today;
       if (alreadyChecked) {
         const checks = h.checks.filter((c) => c !== today);
-        return { ...h, checks, lastChecked: checks[checks.length - 1] ?? "", streak: Math.max(0, h.streak - 1) };
+        updatedHabit = { ...h, checks, lastChecked: checks[checks.length - 1] ?? "", streak: Math.max(0, h.streak - 1) };
       } else {
         const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
         const isConsecutive = h.lastChecked === yesterday.toDateString();
-        return { ...h, checks: [...h.checks, today], lastChecked: today, streak: isConsecutive ? h.streak + 1 : 1 };
+        updatedHabit = { ...h, checks: [...h.checks, today], lastChecked: today, streak: isConsecutive ? h.streak + 1 : 1 };
       }
-    }));
+      return updatedHabit;
+    });
+
+    setHabits(updated);
+
+    if (user && updatedHabit) {
+      try {
+        await apiFetch(`/api/habits/${id}/progress`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            streak: (updatedHabit as Habit).streak,
+            lastChecked: (updatedHabit as Habit).lastChecked,
+            checks: (updatedHabit as Habit).checks
+          })
+        });
+      } catch (err) {
+        console.error("Failed to update habit progress on server:", err);
+      }
+    } else if (!user) {
+      localStorage.setItem("habits", JSON.stringify(updated));
+    }
   };
 
-  const deleteHabit = (id: string) => save(habits.filter((h) => h.id !== id));
+  const deleteHabit = async (id: string) => {
+    const updated = habits.filter((h) => h.id !== id);
+    setHabits(updated);
+
+    if (user) {
+      try {
+        await apiFetch(`/api/habits/${id}`, {
+          method: "DELETE"
+        });
+      } catch (err) {
+        console.error("Failed to delete habit on server:", err);
+      }
+    } else {
+      localStorage.setItem("habits", JSON.stringify(updated));
+    }
+  };
 
   return (
     <div className="min-h-screen px-4 sm:px-6 pt-24 pb-16 relative overflow-hidden" style={{ background: BG }}>

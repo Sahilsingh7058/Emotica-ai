@@ -69,11 +69,32 @@ db.exec(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
+  CREATE TABLE IF NOT EXISTS chat_messages (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    sender     TEXT NOT NULL,
+    text       TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS habits (
+    id           TEXT PRIMARY KEY,
+    user_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name         TEXT NOT NULL,
+    emoji        TEXT NOT NULL,
+    streak       INTEGER DEFAULT 0,
+    last_checked TEXT,
+    checks       TEXT NOT NULL,
+    created_at   DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
   CREATE INDEX IF NOT EXISTS idx_assessment_user ON assessment_responses(user_id);
   CREATE INDEX IF NOT EXISTS idx_assessment_created ON assessment_responses(created_at);
   CREATE INDEX IF NOT EXISTS idx_journal_user ON journal_entries(user_id);
   CREATE INDEX IF NOT EXISTS idx_app_usage_user ON app_usage(user_id);
   CREATE INDEX IF NOT EXISTS idx_app_usage_app ON app_usage(app_id);
+  CREATE INDEX IF NOT EXISTS idx_chat_messages_user ON chat_messages(user_id);
+  CREATE INDEX IF NOT EXISTS idx_habits_user ON habits(user_id);
 `);
 
 // ─── Migrations — safely add columns that may be missing from older DBs ───────
@@ -270,6 +291,75 @@ export function updateStreak(userId: number): void {
 
 export function getStreak(userId: number) {
   return db.prepare(`SELECT * FROM streaks WHERE user_id = ?`).get(userId);
+}
+
+// ─── Chat functions ───────────────────────────────────────────────────────────
+
+export interface ChatMessage {
+  id: number;
+  user_id: number;
+  sender: string;
+  text: string;
+  created_at: string;
+}
+
+export function getChatHistory(userId: number, limit = 50): ChatMessage[] {
+  return db.prepare(`
+    SELECT * FROM chat_messages 
+    WHERE user_id = ? 
+    ORDER BY created_at ASC 
+    LIMIT ?
+  `).all(userId, limit) as ChatMessage[];
+}
+
+export function saveChatMessage(userId: number, sender: string, text: string): number | bigint {
+  const stmt = db.prepare(`
+    INSERT INTO chat_messages (user_id, sender, text) 
+    VALUES (?, ?, ?)
+  `);
+  const r = stmt.run(userId, sender, text);
+  return r.lastInsertRowid;
+}
+
+export function clearChatHistory(userId: number): boolean {
+  const r = db.prepare(`DELETE FROM chat_messages WHERE user_id = ?`).run(userId);
+  return r.changes > 0;
+}
+
+// ─── Habit functions ───────────────────────────────────────────────────────────
+
+export interface DbHabit {
+  id: string;
+  user_id: number;
+  name: string;
+  emoji: string;
+  streak: number;
+  last_checked: string;
+  checks: string; // JSON string
+  created_at: string;
+}
+
+export function getHabits(userId: number): DbHabit[] {
+  return db.prepare(`SELECT * FROM habits WHERE user_id = ? ORDER BY created_at DESC`).all(userId) as DbHabit[];
+}
+
+export function saveHabit(userId: number, habit: { id: string; name: string; emoji: string }): void {
+  db.prepare(`
+    INSERT INTO habits (id, user_id, name, emoji, streak, last_checked, checks)
+    VALUES (?, ?, ?, ?, 0, '', '[]')
+    ON CONFLICT(id) DO UPDATE SET name = excluded.name, emoji = excluded.emoji
+  `).run(habit.id, userId, habit.name, habit.emoji);
+}
+
+export function updateHabitProgress(userId: number, habitId: string, streak: number, lastChecked: string, checks: string): void {
+  db.prepare(`
+    UPDATE habits SET streak = ?, last_checked = ?, checks = ?
+    WHERE id = ? AND user_id = ?
+  `).run(streak, lastChecked, checks, habitId, userId);
+}
+
+export function deleteHabit(userId: number, habitId: string): void {
+  db.prepare(`DELETE FROM habits WHERE id = ? AND user_id = ?`).run(habitId, userId);
 }
 
 export default db;

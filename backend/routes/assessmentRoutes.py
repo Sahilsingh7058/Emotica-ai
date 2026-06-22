@@ -4,7 +4,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import List, Dict
-from app.assessmentData import questions
+from app.assessmentData import questions, daily_questions
 
 router = APIRouter()
 
@@ -171,7 +171,7 @@ def mood_from_score(total: int) -> Dict:
 def generate_suggestion(dim_scores: Dict[str, int], top_app_id: str) -> str:
     """Generate a human, personalised suggestion based on the worst dimensions."""
     worst = sorted(
-        [(d, dim_scores[d]) for d in DIMENSION_MAP.values()],
+        [(d, dim_scores.get(d, 0)) for d in DIMENSION_MAP.values()],
         key=lambda x: x[1], reverse=True
     )[:2]
     worst_dims = [w[0] for w in worst]
@@ -239,6 +239,82 @@ async def submit_assessment(assessment_answers: AssessmentAnswers):
         "suggestion": suggestion,
         "suggestedAppId": top["app_id"] if top else "breathing",
         "totalScore": total,
+        "recommendations": recommendations,
+        "dimensionScores": dim_scores,
+    }
+
+
+# ── Daily Check-in ────────────────────────────────────────────────────────────
+
+DIMENSION_MAP_DAILY = {
+    0: "emotional",
+    1: "energy",
+    2: "sleep",
+    3: "stress",
+    4: "social",
+    5: "anxiety",
+    6: "physical",
+    7: "purpose",
+}
+
+def score_daily_answers(user_answers: List[str]) -> Dict[str, int]:
+    """Return per-dimension raw score (0-3) and total for daily assessment."""
+    dimension_scores: Dict[str, int] = {d: 0 for d in DIMENSION_MAP_DAILY.values()}
+    total = 0
+    for i, answer_text in enumerate(user_answers):
+        for option in daily_questions[i]["options"]:
+            if option["text"] == answer_text:
+                s = option["score"]
+                dimension_scores[DIMENSION_MAP_DAILY[i]] += s
+                total += s
+                break
+    dimension_scores["total"] = total
+    return dimension_scores
+
+
+@router.get("/daily-questions")
+async def get_daily_assessment_questions():
+    return [
+        {
+            "id": q["id"],
+            "question": q["question"],
+            "options": [{"text": opt["text"]} for opt in q["options"]],
+        }
+        for q in daily_questions
+    ]
+
+
+@router.post("/daily-submit")
+async def submit_daily_assessment(assessment_answers: AssessmentAnswers):
+    user_answers = assessment_answers.answers
+
+    if not user_answers or len(user_answers) != len(daily_questions):
+        return {"error": "Incomplete assessment data."}
+
+    # Score per dimension
+    dim_scores = score_daily_answers(user_answers)
+    total = dim_scores.pop("total")
+
+    # Scale raw total (max 24) to standard 30-point scale
+    scaled_total = round((total / 24) * 30)
+
+    # Mood label + description
+    mood_data = mood_from_score(scaled_total)
+
+    # Smart multi-recommendation
+    recommendations = compute_recommendations(dim_scores)
+    top = recommendations[0] if recommendations else None
+
+    # Human suggestion text
+    suggestion = generate_suggestion(dim_scores, top["app_id"] if top else "breathing")
+
+    return {
+        "mood": mood_data["mood"],
+        "description": mood_data["description"],
+        "color": mood_data["color"],
+        "suggestion": suggestion,
+        "suggestedAppId": top["app_id"] if top else "breathing",
+        "totalScore": scaled_total,
         "recommendations": recommendations,
         "dimensionScores": dim_scores,
     }

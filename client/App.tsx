@@ -26,11 +26,11 @@ import Breathing from "@/pages/Small Apps/Breathing";
 import MoodTracker from "@/pages/Small Apps/MoodTracker";
 import Gratitude from "@/pages/Small Apps/Gratitude";
 import MeditationTimer from "@/pages/Small Apps/MeditationTimer";
-import SleepStories from "@/pages/Small Apps/SleepStories";
+import SleepStories from "@/pages/Small Apps/SleepStories.jsx";
 import FocusBooster from "@/pages/Small Apps/FocusBooster";
 import EnergyCheck from "@/pages/Small Apps/EnergyCheck";
 import Sounds from "@/pages/Small Apps/Sounds";
-import HabitBuilder from "@/pages/Small Apps/HabitBuilder";
+import HabitBuilder from "@/pages/Small Apps/HabitBuilder.tsx";
 import Kindness from "@/pages/Small Apps/Kindness";
 import Affirmations from "@/pages/Small Apps/Affirmations";
 
