@@ -24,6 +24,6 @@ dist-ssr
 *.sw?
 
 .config/
-!.env
+.env
 vite.config.js
 vite.config.server.js

@@ -3,8 +3,8 @@ import { Moon, BookOpen, ChevronLeft, Loader, RefreshCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const fetchSleepStories = async () => {
-  const apiKey = "AIzaSyDwab2RiWSDtGPHoCL8o0CD0QCyozV_Mp4";
-  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${apiKey}`;
 
   const systemPrompt =
     "You are a gentle storyteller specializing in peaceful, short narratives for sleep and relaxation. The stories should focus on natural, soothing imagery.";

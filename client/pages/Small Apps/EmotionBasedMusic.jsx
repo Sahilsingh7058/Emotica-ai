@@ -2,10 +2,9 @@ import React, { useState, useCallback } from 'react';
 
 // --- API Constants and Utility Functions ---
 
-// The API key is initialized as an empty string, the Canvas environment handles providing it.
-const apiKey = "AIzaSyDwab2RiWSDtGPHoCL8o0CD0QCyozV_Mp4"; 
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY; 
 // Updated to the correct, mandated model name
-const TEXT_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+const TEXT_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${apiKey}`;
 
 // Utility function for retrying fetch calls with exponential backoff
 const retryFetch = async (url, options, retries = 3, delay = 1000) => {

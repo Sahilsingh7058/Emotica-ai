@@ -7,6 +7,8 @@ import authRoutes from "./routes/authRoutes";
 import analyticsRoutes from "./routes/analyticsRoutes";
 import journalRoutes from "./routes/journalRoutes";
 import streakRoutes from "./routes/streakRoutes";
+import chatRoutes from "./routes/chatRoutes";
+import habitRoutes from "./routes/habitRoutes";
 
 export function createServer() {
   const app = express();
@@ -38,6 +40,12 @@ export function createServer() {
 
   // ── Streaks + Usage ───────────────────────────────────────────────────────
   app.use("/api/streak", streakRoutes);
+
+  // ── Chat ──────────────────────────────────────────────────────────────────
+  app.use("/api/chat", chatRoutes);
+
+  // ── Habits ────────────────────────────────────────────────────────────────
+  app.use("/api/habits", habitRoutes);
 
   // ── Assessment save (optionally attaches user from token) ─────────────────
   app.post("/api/assessment/save", optionalAuth, (req: AuthRequest, res) => {
