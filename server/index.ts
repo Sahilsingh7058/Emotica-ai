@@ -9,6 +9,7 @@ import journalRoutes from "./routes/journalRoutes";
 import streakRoutes from "./routes/streakRoutes";
 import chatRoutes from "./routes/chatRoutes";
 import habitRoutes from "./routes/habitRoutes";
+import emotionAnalysisRoutes from "./routes/emotionAnalysisRoutes";
 
 export function createServer() {
   const app = express();
@@ -46,6 +47,9 @@ export function createServer() {
 
   // ── Habits ────────────────────────────────────────────────────────────────
   app.use("/api/habits", habitRoutes);
+
+  // ── Emotion Analysis ────────────────────────────────────────────────────
+  app.use("/api/emotion", emotionAnalysisRoutes);
 
   // ── Assessment save (optionally attaches user from token) ─────────────────
   app.post("/api/assessment/save", optionalAuth, (req: AuthRequest, res) => {

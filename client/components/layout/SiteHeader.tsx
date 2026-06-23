@@ -11,6 +11,7 @@ const navItems = [
   { to: "/community", label: "Community", end: false },
   { to: "/smallapps", label: "Apps", end: false },
   { to: "/dashboard", label: "Dashboard", end: false },
+  { to: "/emotion-analysis", label: "Emotions", end: false },
   { to: "/support", label: "Support", end: false },
 ];
 
