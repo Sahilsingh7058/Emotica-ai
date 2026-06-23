@@ -33,6 +33,8 @@ import Sounds from "@/pages/Small Apps/Sounds";
 import HabitBuilder from "@/pages/Small Apps/HabitBuilder.tsx";
 import Kindness from "@/pages/Small Apps/Kindness";
 import Affirmations from "@/pages/Small Apps/Affirmations";
+import EmotionAnalyzer from "@/pages/Small Apps/EmotionAnalyzer";
+import EmotionAnalysis from "@/pages/EmotionAnalysis";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -71,6 +73,8 @@ const App = () => (
                 <Route path="apps/habits" element={<HabitBuilder />} />
                 <Route path="apps/kindness" element={<Kindness />} />
                 <Route path="apps/affirmations" element={<Affirmations />} />
+                <Route path="apps/emotion-analyzer" element={<EmotionAnalyzer />} />
+                <Route path="emotion-analysis" element={<EmotionAnalysis />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

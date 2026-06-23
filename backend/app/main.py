@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorClient
 from fastapi.middleware.cors import CORSMiddleware
 from routes import assessmentRoutes
+from routes import predictionRoutes
 
 app = FastAPI()
 
@@ -20,6 +21,11 @@ app.include_router(
     assessmentRoutes.router,
     prefix="/api/assessment",
     tags=["Assessment"],
+)
+
+app.include_router(
+    predictionRoutes.router,
+    tags=["Prediction"],
 )
 
 class User(BaseModel):

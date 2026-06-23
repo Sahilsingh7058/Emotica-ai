@@ -109,6 +109,14 @@ const smallApps: App[] = [
     color: "from-purple-500 to-violet-400",
     path: "/apps/affirmations",
   },
+  {
+    id: "emotion-analyzer",
+    title: "Emotion Analyzer",
+    description: "Analyze any text with our deep learning model to detect emotions with 92.81% accuracy.",
+    icon: "🧠",
+    color: "from-violet-500 to-purple-400",
+    path: "/apps/emotion-analyzer",
+  },
 ];
 
 const containerVariants = {
