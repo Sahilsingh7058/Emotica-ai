@@ -98,7 +98,7 @@ export default function Dashboard() {
     setCheckinError(null);
     setShowCheckin(true);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/assessment/daily-questions");
+      const response = await fetch("/api/assessment/daily-questions");
       if (!response.ok) throw new Error("Could not start assessment. Please try again.");
       const data: Question[] = await response.json();
       setCheckinQuestions(data);
@@ -131,7 +131,7 @@ export default function Dashboard() {
     setCheckinSubmitting(true);
     setCheckinError(null);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/assessment/daily-submit", {
+      const response = await fetch("/api/assessment/daily-submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ answers: finalAnswers }),

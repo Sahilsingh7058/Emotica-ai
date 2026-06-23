@@ -8,6 +8,7 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    allowedHosts: true,
     fs: {
       allow: ['..', 'C:/College Project'],
       deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "server/**"],

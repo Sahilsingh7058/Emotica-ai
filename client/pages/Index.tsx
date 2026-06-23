@@ -99,7 +99,7 @@ export default function Index() {
     setAssessmentState("fetching");
     setError(null);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/assessment/questions");
+      const response = await fetch("/api/assessment/questions");
       if (!response.ok) throw new Error("Could not start the assessment. Please try again.");
       const data: Question[] = await response.json();
       setQuestions(data);
@@ -132,7 +132,7 @@ export default function Index() {
     setAssessmentState("submitting");
     setError(null);
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/assessment/submit", {
+      const response = await fetch("/api/assessment/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ answers: finalAnswers }),

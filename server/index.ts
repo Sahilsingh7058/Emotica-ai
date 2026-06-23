@@ -47,6 +47,63 @@ export function createServer() {
   // ── Habits ────────────────────────────────────────────────────────────────
   app.use("/api/habits", habitRoutes);
 
+  // ── Assessment Proxy (forwards to Python FastAPI backend on port 8000) ─────
+  app.get("/api/assessment/questions", async (_req, res) => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/assessment/questions");
+      if (!response.ok) throw new Error(`Python backend returned ${response.status}`);
+      const data = await response.json();
+      res.json(data);
+    } catch (error) {
+      console.error("Failed to fetch questions from Python backend:", error);
+      res.status(502).json({ error: "Python backend is unreachable" });
+    }
+  });
+
+  app.post("/api/assessment/submit", async (req, res) => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/assessment/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(req.body),
+      });
+      if (!response.ok) throw new Error(`Python backend returned ${response.status}`);
+      const data = await response.json();
+      res.json(data);
+    } catch (error) {
+      console.error("Failed to submit assessment to Python backend:", error);
+      res.status(502).json({ error: "Python backend is unreachable" });
+    }
+  });
+
+  app.get("/api/assessment/daily-questions", async (_req, res) => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/assessment/daily-questions");
+      if (!response.ok) throw new Error(`Python backend returned ${response.status}`);
+      const data = await response.json();
+      res.json(data);
+    } catch (error) {
+      console.error("Failed to fetch daily questions from Python backend:", error);
+      res.status(502).json({ error: "Python backend is unreachable" });
+    }
+  });
+
+  app.post("/api/assessment/daily-submit", async (req, res) => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/assessment/daily-submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(req.body),
+      });
+      if (!response.ok) throw new Error(`Python backend returned ${response.status}`);
+      const data = await response.json();
+      res.json(data);
+    } catch (error) {
+      console.error("Failed to submit daily assessment to Python backend:", error);
+      res.status(502).json({ error: "Python backend is unreachable" });
+    }
+  });
+
   // ── Assessment save (optionally attaches user from token) ─────────────────
   app.post("/api/assessment/save", optionalAuth, (req: AuthRequest, res) => {
     try {
