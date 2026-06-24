@@ -27,3 +27,16 @@ dist-ssr
 .env
 vite.config.js
 vite.config.server.js
+
+# SQLite databases and temporary files
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/

@@ -95,6 +95,19 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_app_usage_app ON app_usage(app_id);
   CREATE INDEX IF NOT EXISTS idx_chat_messages_user ON chat_messages(user_id);
   CREATE INDEX IF NOT EXISTS idx_habits_user ON habits(user_id);
+
+  CREATE TABLE IF NOT EXISTS emotion_analyses (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id       INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    text          TEXT    NOT NULL,
+    emotion       TEXT    NOT NULL,
+    confidence    REAL    NOT NULL,
+    probabilities TEXT    NOT NULL,
+    created_at    DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_emotion_user ON emotion_analyses(user_id);
+  CREATE INDEX IF NOT EXISTS idx_emotion_created ON emotion_analyses(created_at);
 `);
 
 // ─── Migrations — safely add columns that may be missing from older DBs ───────
@@ -360,6 +373,39 @@ export function updateHabitProgress(userId: number, habitId: string, streak: num
 
 export function deleteHabit(userId: number, habitId: string): void {
   db.prepare(`DELETE FROM habits WHERE id = ? AND user_id = ?`).run(habitId, userId);
+}
+
+// ─── Emotion Analysis functions ─────────────────────────────────────────────
+
+export interface DbEmotionAnalysis {
+  id: number;
+  user_id: number;
+  text: string;
+  emotion: string;
+  confidence: number;
+  probabilities: string;
+  created_at: string;
+}
+
+export function saveEmotionAnalysis(
+  userId: number,
+  text: string,
+  emotion: string,
+  confidence: number,
+  probabilities: Record<string, number>,
+): number | bigint {
+  const stmt = db.prepare(`
+    INSERT INTO emotion_analyses (user_id, text, emotion, confidence, probabilities)
+    VALUES (?, ?, ?, ?, ?)
+  `);
+  const r = stmt.run(userId, text, emotion, confidence, JSON.stringify(probabilities));
+  return r.lastInsertRowid;
+}
+
+export function getEmotionAnalyses(userId: number, limit = 200) {
+  return db.prepare(`
+    SELECT * FROM emotion_analyses WHERE user_id = ? ORDER BY created_at DESC LIMIT ?
+  `).all(userId, limit) as DbEmotionAnalysis[];
 }
 
 export default db;
