@@ -179,6 +179,25 @@ export function touchUserActive(userId: number): void {
   db.prepare(`UPDATE users SET last_active = datetime('now') WHERE id = ?`).run(userId);
 }
 
+export function updateUserProfile(id: number, name: string, email: string): void {
+  db.prepare(`UPDATE users SET name = ?, email = ? WHERE id = ?`).run(name, email, id);
+}
+
+export function updateUserPassword(id: number, passwordHash: string): void {
+  db.prepare(`UPDATE users SET password_hash = ? WHERE id = ?`).run(passwordHash, id);
+}
+
+export function getUserWellnessStats(userId: number) {
+  const journals = db.prepare(`SELECT COUNT(*) as count FROM journal_entries WHERE user_id = ?`).get(userId) as { count: number };
+  const assessments = db.prepare(`SELECT COUNT(*) as count FROM assessment_responses WHERE user_id = ?`).get(userId) as { count: number };
+  const emotions = db.prepare(`SELECT COUNT(*) as count FROM emotion_analyses WHERE user_id = ?`).get(userId) as { count: number };
+  return {
+    journals: journals?.count ?? 0,
+    assessments: assessments?.count ?? 0,
+    emotions: emotions?.count ?? 0,
+  };
+}
+
 // ─── Assessment functions ──────────────────────────────────────────────────────
 
 export function saveAssessmentResponse(data: AssessmentData): number | bigint {
