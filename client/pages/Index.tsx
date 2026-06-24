@@ -177,7 +177,7 @@ export default function Index() {
           <div className="absolute bottom-1/3 -right-40 w-80 h-80 rounded-full blur-3xl opacity-20 animate-orb-pulse" style={{ background: "radial-gradient(circle, #2563eb, transparent)", animationDelay: "2s" }} />
         </div>
 
-        <div className="w-full max-w-2xl relative z-10">
+        <div className="w-full max-w-2xl relative z-10 mt-20">
           <motion.div className="flex items-center justify-between mb-8" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
             <span className="text-white/40 text-sm font-medium tracking-wider uppercase">Emotional Check-in</span>
             <span className="text-white/60 text-sm">{currentQuestionIndex + 1} / {questions.length}</span>
@@ -312,17 +312,7 @@ export default function Index() {
         <div className="relative z-10 px-6 w-full max-w-5xl mx-auto text-center">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: "easeOut" }}>
 
-            {/* Badge */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-purple-500/30 bg-purple-500/10 backdrop-blur-sm text-purple-300 text-sm font-medium mb-10"
-            >
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              AI-Powered Mental Wellness
-              <span className="w-2 h-2 rounded-full bg-purple-400" />
-            </motion.div>
+            
 
             {/* Main headline */}
             <motion.h1
